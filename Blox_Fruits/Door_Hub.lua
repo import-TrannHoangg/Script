@@ -33,34 +33,71 @@ IconGradient.Color = ColorSequence.new{
 }
 IconGradient.Parent = OpenIcon
 
-local dragging, dragInput, dragStart, startPos
-local function update(input)
+local dragging = false
+local dragStart, startPos
+local targetPos = OpenIcon.Position
+
+OpenIcon.AnchorPoint = Vector2.new(0.5, 0.5)
+
+task.spawn(function()
+    while task.wait() do
+        if dragging then
+            OpenIcon.Position = OpenIcon.Position:Lerp(targetPos, 0.10)
+        end
+    end
+end)
+
+local function updateTarget(input)
     local delta = input.Position - dragStart
-    OpenIcon.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+
+    targetPos = UDim2.new(
+        startPos.X.Scale,
+        startPos.X.Offset + delta.X,
+        startPos.Y.Scale,
+        startPos.Y.Offset + delta.Y
+    )
 end
 
 OpenIcon.InputBegan:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
         dragging = true
         dragStart = input.Position
         startPos = OpenIcon.Position
-        input.Changed:Connect(function()
-            if input.UserInputState == Enum.UserInputState.End then
-                dragging = false
-            end
-        end)
+
+        OpenIcon.Size = UDim2.new(0, 48, 0, 48)
+        TweenService:Create(OpenIcon, TweenInfo.new(0.15, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+            Size = UDim2.new(0, 52, 0, 52)
+        }):Play()
     end
 end)
 
 OpenIcon.InputChanged:Connect(function(input)
-    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
-        dragInput = input
+    if input.UserInputType == Enum.UserInputType.MouseMovement
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        if dragging then
+            updateTarget(input)
+        end
     end
 end)
 
-UserInputService.InputChanged:Connect(function(input)
-    if input == dragInput and dragging then
-        update(input)
+UserInputService.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1
+    or input.UserInputType == Enum.UserInputType.Touch then
+
+        dragging = false
+
+        TweenService:Create(OpenIcon, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+            Position = targetPos
+        }):Play()
+
+        task.delay(0.1, function()
+            TweenService:Create(OpenIcon, TweenInfo.new(0.18, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
+                Size = UDim2.new(0, 50, 0, 50)
+            }):Play()
+        end)
     end
 end)
 
