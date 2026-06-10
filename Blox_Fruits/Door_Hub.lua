@@ -33,6 +33,37 @@ IconGradient.Color = ColorSequence.new{
 }
 IconGradient.Parent = OpenIcon
 
+local dragging, dragInput, dragStart, startPos
+local function update(input)
+    local delta = input.Position - dragStart
+    OpenIcon.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+OpenIcon.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = OpenIcon.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+OpenIcon.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        update(input)
+    end
+end)
+
 local MainFrameWidth, MainFrameHeight = 710, 410
 
 local GlowBackground = Instance.new("Frame")
@@ -522,7 +553,7 @@ function AddDropdown(tabName, text, list, callback)
     local Arrow = Instance.new("TextLabel")
     Arrow.Size = UDim2.new(0, 20, 0, 42)
     Arrow.Position = UDim2.new(1, -30, 0, 0)
-    Arrow.Text = "▼"
+    Arrow.Text = "v"
     Arrow.Font = Enum.Font.GothamBold
     Arrow.TextSize = 11
     Arrow.TextColor3 = Color3.fromRGB(150, 150, 150)
@@ -548,7 +579,7 @@ function AddDropdown(tabName, text, list, callback)
         ItemBtn.BackgroundTransparency = 0.97
         ItemBtn.Text = "  " .. tostring(item)
         ItemBtn.Font = Enum.Font.Gotham
-        ItemBtn.TextSize = 12
+        ItemBtn.TextSize = 14
         ItemBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
         ItemBtn.TextXAlignment = Enum.TextXAlignment.Left
         ItemBtn.ZIndex = 5
@@ -561,7 +592,7 @@ function AddDropdown(tabName, text, list, callback)
         ItemBtn.MouseButton1Click:Connect(function()
             expanded = false
             CurrentSelect.Text = tostring(item)
-            Arrow.Text = "▼"
+            Arrow.Text = "v"
             TweenService:Create(DropdownFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1, -10, 0, 42)}):Play()
             pcall(callback, item)
         end)
@@ -570,10 +601,10 @@ function AddDropdown(tabName, text, list, callback)
     DropBtn.MouseButton1Click:Connect(function()
         expanded = not expanded
         if expanded then
-            Arrow.Text = "▲"
+            Arrow.Text = "^"
             TweenService:Create(DropdownFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1, -10, 0, 46 + (#list * 32))}):Play()
         else
-            Arrow.Text = "▼"
+            Arrow.Text = "v"
             TweenService:Create(DropdownFrame, TweenInfo.new(0.2, Enum.EasingStyle.Quart), {Size = UDim2.new(1, -10, 0, 42)}):Play()
         end
     end)
@@ -650,8 +681,78 @@ end)
 
 CreateTab("Cửa Hàng", "rbxassetid://91250120807261")
 
+local ConfirmFrame = Instance.new("Frame")
+ConfirmFrame.Name = "ConfirmFrame"
+ConfirmFrame.Size = UDim2.new(0, 300, 0, 140)
+ConfirmFrame.Position = UDim2.new(0.5, 0, 0.5, 0)
+ConfirmFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+ConfirmFrame.BackgroundColor3 = Color3.fromRGB(20, 22, 33)
+ConfirmFrame.BorderSizePixel = 0
+ConfirmFrame.Visible = false
+ConfirmFrame.ZIndex = 10
+ConfirmFrame.Parent = CustomHub
+
+local ConfirmCorner = Instance.new("UICorner")
+ConfirmCorner.CornerRadius = UDim.new(0, 10)
+ConfirmCorner.Parent = ConfirmFrame
+
+local ConfirmStroke = Instance.new("UIStroke")
+ConfirmStroke.Thickness = 1.5
+ConfirmStroke.Color = Color3.fromRGB(255, 65, 65)
+ConfirmStroke.Parent = ConfirmFrame
+
+local ConfirmText = Instance.new("TextLabel")
+ConfirmText.Size = UDim2.new(1, -20, 0, 50)
+ConfirmText.Position = UDim2.new(0, 10, 0, 15)
+ConfirmText.BackgroundTransparency = 1
+ConfirmText.Text = "Bạn có chắc chắn muốn tắt UI không?"
+ConfirmText.Font = Enum.Font.GothamMedium
+ConfirmText.TextSize = 14
+ConfirmText.TextColor3 = Color3.fromRGB(240, 240, 240)
+ConfirmText.TextWrapped = true
+ConfirmText.ZIndex = 10
+ConfirmText.Parent = ConfirmFrame
+
+local YesBtn = Instance.new("TextButton")
+YesBtn.Size = UDim2.new(0, 100, 0, 32)
+YesBtn.Position = UDim2.new(0, 40, 0, 85)
+YesBtn.BackgroundColor3 = Color3.fromRGB(255, 65, 65)
+YesBtn.Text = "Xác Nhận"
+YesBtn.Font = Enum.Font.GothamBold
+YesBtn.TextSize = 12
+YesBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+YesBtn.ZIndex = 10
+YesBtn.Parent = ConfirmFrame
+
+local YesCorner = Instance.new("UICorner")
+YesCorner.CornerRadius = UDim.new(0, 6)
+YesCorner.Parent = YesBtn
+
+local NoBtn = Instance.new("TextButton")
+NoBtn.Size = UDim2.new(0, 100, 0, 32)
+NoBtn.Position = UDim2.new(1, -140, 0, 85)
+NoBtn.BackgroundColor3 = Color3.fromRGB(50, 53, 70)
+NoBtn.Text = "Hủy Bỏ"
+NoBtn.Font = Enum.Font.GothamBold
+NoBtn.TextSize = 12
+NoBtn.TextColor3 = Color3.fromRGB(200, 200, 200)
+NoBtn.ZIndex = 10
+NoBtn.Parent = ConfirmFrame
+
+local NoCorner = Instance.new("UICorner")
+NoCorner.CornerRadius = UDim.new(0, 6)
+NoCorner.Parent = NoBtn
+
 ShutDownBtn.MouseButton1Click:Connect(function()
+    ConfirmFrame.Visible = true
+end)
+
+YesBtn.MouseButton1Click:Connect(function()
     CustomHub:Destroy()
+end)
+
+NoBtn.MouseButton1Click:Connect(function()
+    ConfirmFrame.Visible = false
 end)
 
 CloseBtn.MouseButton1Click:Connect(function()
@@ -661,9 +762,11 @@ CloseBtn.MouseButton1Click:Connect(function()
 end)
 
 OpenIcon.MouseButton1Click:Connect(function()
-    MainFrame.Visible = true
-    GlowBackground.Visible = true
-    OpenIcon.Visible = false
+    if not dragging then
+        MainFrame.Visible = true
+        GlowBackground.Visible = true
+        OpenIcon.Visible = false
+    end
 end)
 
 task.spawn(function()
