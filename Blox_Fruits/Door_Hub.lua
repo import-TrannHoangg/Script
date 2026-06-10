@@ -56,7 +56,7 @@ UIGradientGlow.Parent = GlowBackground
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
 MainFrame.Size = UDim2.new(0,710,0,490)
-MainFrame.Position = UDim2.new(0.5,-355,0.5,-245)
+GlowBackground.Size = UDim2.new(0,560,0,410)
 MainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 20)
 MainFrame.BackgroundTransparency = 0.35
 MainFrame.BorderSizePixel = 0
@@ -154,6 +154,11 @@ ShutDownBtn.TextSize = 26
 ShutDownBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ShutDownBtn.Parent = TitleBar
 
+local ShutDownStroke = Instance.new("UIStroke")
+ShutDownStroke.Color = Color3.fromRGB(255,255,255)
+ShutDownStroke.Transparency = 0.5
+ShutDownStroke.Parent = ShutDownBtn
+
 local ConfirmFrame = Instance.new("Frame")
 ConfirmFrame.Name = "ConfirmFrame"
 ConfirmFrame.Size = UDim2.new(0, 280, 0, 140)
@@ -215,6 +220,12 @@ local NoCorner = Instance.new("UICorner")
 NoCorner.CornerRadius = UDim.new(0, 8)
 NoCorner.Parent = NoBtn
 
+local Sidebar = Instance.new("Frame")
+Sidebar.Size = UDim2.new(0, 140, 1, -70)
+Sidebar.Position = UDim2.new(0, 15, 0, 55)
+Sidebar.BackgroundTransparency = 1
+Sidebar.Parent = MainFrame
+
 local SidebarIndicator = Instance.new("Frame")
 SidebarIndicator.Size = UDim2.new(0,2,0.15,0)
 SidebarIndicator.Position = UDim2.new(1,-3,0,0)
@@ -224,7 +235,6 @@ SidebarIndicator.Parent = Sidebar
 local IndicatorCorner = Instance.new("UICorner")
 IndicatorCorner.CornerRadius = UDim.new(1,0)
 IndicatorCorner.Parent = SidebarIndicator
-
 
 Sidebar:GetPropertyChangedSignal("CanvasPosition"):Connect(function()
     local max =
