@@ -55,6 +55,7 @@ UIGradientGlow.Parent = GlowBackground
 
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
+MainFrame.Position = UDim2.new(0.5,-355,0.5,-245)
 MainFrame.Size = UDim2.new(0,710,0,490)
 GlowBackground.Size = UDim2.new(0,560,0,410)
 MainFrame.BackgroundColor3 = Color3.fromRGB(12, 12, 20)
@@ -80,7 +81,7 @@ TitleBar.Parent = MainFrame
 local HeaderLine = Instance.new("Frame")
 HeaderLine.Size = UDim2.new(1,-20,0,1)
 HeaderLine.BackgroundColor3 = Color3.fromRGB(255,255,255)
-HeaderLine.Position = UDim2.new(0,10,0,60)
+HeaderLine.Position = UDim2.new(0,10,0,50)
 
 HeaderLine.BorderSizePixel = 0
 HeaderLine.Parent = MainFrame
@@ -130,7 +131,7 @@ CloseBtn.BackgroundTransparency = 1
 
 CloseBtn.Text = "-"
 CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.TextSize = 28
+CloseBtn.TextSize = 22
 CloseBtn.TextColor3 = Color3.fromRGB(255,255,255)
 
 CloseBtn.Parent = TitleBar
@@ -150,7 +151,7 @@ ShutDownBtn.Position = UDim2.new(1,-55,0,6)
 ShutDownBtn.BackgroundTransparency = 1
 ShutDownBtn.Text = "X"
 ShutDownBtn.Font = Enum.Font.GothamBold
-ShutDownBtn.TextSize = 26
+ShutDownBtn.TextSize = 22
 ShutDownBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
 ShutDownBtn.Parent = TitleBar
 
@@ -220,7 +221,9 @@ local NoCorner = Instance.new("UICorner")
 NoCorner.CornerRadius = UDim.new(0, 8)
 NoCorner.Parent = NoBtn
 
-local Sidebar = Instance.new("Frame")
+local Sidebar = Instance.new("ScrollingFrame")
+Sidebar.ScrollBarThickness = 0
+Sidebar.CanvasSize = UDim2.new(0,0,0,0)
 Sidebar.Size = UDim2.new(0, 140, 1, -70)
 Sidebar.Position = UDim2.new(0, 15, 0, 55)
 Sidebar.BackgroundTransparency = 1
@@ -385,7 +388,7 @@ if tabIcon then
 end
 
 local TabLabel = Instance.new("TextLabel")
-TabLabel.Size = UDim2.new(1, -26, 1, 0)
+TabLabel.Size = UDim2.new(1,-40,1,0)
 TabLabel.BackgroundTransparency = 1
 TabLabel.Text = tabName
 TabLabel.Font = Enum.Font.GothamBold
@@ -542,6 +545,8 @@ local sliding = false
 
 local Knob = Instance.new("Frame")
 Knob.Size = UDim2.new(0,14,0,14)
+Knob.BackgroundColor3 = Color3.fromRGB(255,255,255)
+BorderSizePixel = 0
 Knob.AnchorPoint = Vector2.new(0.5,0.5)
 Knob.Position = UDim2.new(
     (default-min)/(max-min),
@@ -672,7 +677,7 @@ end)
 
 end
 
-function AddTextBox(tabName, text, iconStr, placeholder, callback)
+function AddTextBox(tabName, text, placeholder, callback)
 local page = Pages[tabName]
 local BoxFrame = Instance.new("Frame")
 BoxFrame.Size = UDim2.new(1, -10, 0, 46)
@@ -736,7 +741,7 @@ end)
 
 end
 
-function AddDropdown(tabName, textn, list, callback)
+function AddDropdown(tabName, text, list, callback)
 local page = Pages[tabName]
 local expanded = false
 
@@ -1053,25 +1058,44 @@ t2:Play()
 t1.Completed:Connect(function()
     MainFrame.Visible = false
     GlowBackground.Visible = false
+
     OpenIcon.Visible = true
     OpenIcon.Active = true
-    OpenIcon.Draggable = true
+
     OpenIcon.Size = UDim2.new(0, 0, 0, 0)
-    TweenService:Create(OpenIcon, TweenInfo.new(0.2, Enum.EasingStyle.Back), {Size = UDim2.new(0, 50, 0, 50)}):Play()
+    OpenIcon.ImageTransparency = 0
+    OpenIcon.BackgroundTransparency = 0.2
+
+    task.wait()
+
+    TweenService:Create(
+        OpenIcon,
+        TweenInfo.new(0.25, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
+        {Size = UDim2.new(0, 50, 0, 50)}
+    ):Play()
 end)
 
 
 end)
 
 OpenIcon.MouseButton1Click:Connect(function()
-TweenService:Create(OpenIcon, TweenInfo.new(0.15, Enum.EasingStyle.Quad), {Size = UDim2.new(0, 0, 0, 0)}):Play()
+TweenService:Create(OpenIcon, TweenInfo.new(0.15), {
+    Rotation = 10
+}):Play()
+
+task.wait(0.15)
+
+TweenService:Create(OpenIcon, TweenInfo.new(0.2), {
+    Rotation = 0
+}):Play()
+
 task.wait(0.15)
 OpenIcon.Visible = false
 
 MainFrame.Visible = true
 GlowBackground.Visible = true
-MainFrame.Size = UDim2.new(0,710,0,490)
 GlowBackground.Size = UDim2.new(0,560,0,410)
+MainFrame.Size = UDim2.new(0,710,0,490)
 MainFrame.BackgroundTransparency = 0.35
 GlowBackground.BackgroundTransparency = 0.8
 
