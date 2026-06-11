@@ -4,7 +4,8 @@ local CoreGui = game:GetService("CoreGui")
 
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Net = ReplicatedStorage.Modules.Net
+
+local Net = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
 local RegisterAttack = Net["RE/RegisterAttack"]
 local RegisterHit = Net["RE/RegisterHit"]
 
@@ -363,8 +364,8 @@ function CreateTab(tabName, tabIcon)
     Page.ScrollBarThickness = 2
     Page.ScrollBarImageColor3 = Color3.fromRGB(255, 255, 255)
     Page.CanvasSize = UDim2.new(0, 0, 0, 0)
-    Page.ClipsDescendants = false
-    Page.ZIndex = 3
+    Page.ClipsDescendants = true 
+    Page.ZIndex = 4
     Page.Parent = Container
 
     local PageLayout = Instance.new("UIListLayout")
@@ -840,86 +841,73 @@ function AddInput(tabName, text, placeholder, callback)
     end)
 end
 
-CreateTab("Farm", "rbxassetid://70492079783125")
-AddLabel("Farm", "Farm Chính")
-
 local function GetCharacter()
     return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
 end
 
 local function GetSessionID()
     local SendHitsToServer = getrenv()._G.SendHitsToServer
+    if not SendHitsToServer then return nil end
+    
     local CombatThread = getupvalues(SendHitsToServer)[1]
     local UserIDSlice = tostring(LocalPlayer.UserId):sub(2, 4)
     local MemorySlice = tostring(CombatThread):sub(11, 15)
+    
     return UserIDSlice .. MemorySlice
 end
 
-local function Attack(TargetCharacter)
-    RegisterAttack:FireServer(0.5)
-    task.wait()
-    local HitPart = TargetCharacter:FindFirstChild("RightLowerLeg") or TargetCharacter:FindFirstChild("HumanoidRootPart") or TargetCharacter:FindFirstChild("Head")
-    
-    if HitPart then
-        local dataTable = {
-            HitPart,
-            {},
-            nil,
-            GetSessionID()
-        }
-        RegisterHit:FireServer(unpack(dataTable))
-    end
-end
+local TargetCharacter = nil 
 
-local function GetAllTargets()
-    local Targets = {}
-    local MyChar = GetCharacter()
-
-    for _, obj in pairs(workspace:GetDescendants()) do
-        if obj:IsA("Humanoid") and obj.Health > 0 then
-            local Char = obj.Parent
-            if Char and Char ~= MyChar and Char:FindFirstChild("HumanoidRootPart") then
-                table.insert(Targets, Char)
+task.spawn(function()
+    while true do
+        task.wait(0.1)
+        
+        local MyChar = GetCharacter()
+        local MyRoot = MyChar and MyChar:FindFirstChild("HumanoidRootPart")
+        
+        if MyRoot then
+            local ClosestTarget = nil
+            local ShortestDistance = 30
+            
+            for _, v in pairs(workspace:GetChildren()) do
+                local humanoid = v:FindFirstChildOfClass("Humanoid")
+                local targetRoot = v:FindFirstChild("HumanoidRootPart")
+                
+                if humanoid and targetRoot and humanoid.Health > 0 and v ~= MyChar then
+                    local Distance = (MyRoot.Position - targetRoot.Position).Magnitude
+                    if Distance < ShortestDistance then
+                        ShortestDistance = Distance
+                        ClosestTarget = v
+                    end
+                end
             end
+            
+            TargetCharacter = ClosestTarget
         end
     end
-    return Targets
-end
+end)
 
 while true do
-    local Character = GetCharacter()
-    local RootPart = Character:FindFirstChild("HumanoidRootPart")
+    RunService.Heartbeat:Wait() 
     
-    if RootPart then
-        local Targets = GetAllTargets()
-        
-        for _, Target in pairs(Targets) do
-            local TargetHumanoid = Target:FindFirstChild("Humanoid")
-            local TargetRootPart = Target:FindFirstChild("HumanoidRootPart")
+    if TargetCharacter and TargetCharacter:FindFirstChild("RightLowerLeg") then
+        local session = GetSessionID()
+        if session then
+            RegisterAttack:FireServer(0.5)
             
-            while TargetHumanoid and TargetHumanoid.Health > 0 and TargetRootPart and Character:IsDescendantOf(workspace) do
-                RootPart.CFrame = CFrame.new(TargetRootPart.Position) * CFrame.new(0, 57, 0)
-                RootPart.Velocity = Vector3.new(0, 0, 0)
-                
-                Attack(Target)
-            end
+            local dataTable = {
+                TargetCharacter.RightLowerLeg,
+                {},
+                nil,
+                session
+            }
+            RegisterHit:FireServer(unpack(dataTable))
         end
     end
 end
 
-AddToggle("Farm", "Bật Auto Farm Level", false, function(state)
-    if state then
-        print("Đã bật Auto Farm")
-    else
-        print("Đã tắt Auto Farm")
-    end
-end)
-
-AddDropdown("Farm", "Chọn Khu Vực Farm", {"Đảo Khởi Đầu", "Đảo Sa Mạc", "Tuyết Sơn", "Đảo Bầu Trời", "Đảo Ma Quỷ"}, function(island) end)
-
-AddInput("Farm", "Nhập Số", "Ví Dụ : 6736", function(text)
-    print("Nhập Số : " .. text)
-end)
+CreateTab("Farm", "rbxassetid://70492079783125")
+AddLabel("Farm", "Farm Chính")
 
 CreateTab("Nhiệm Vụ & Vật Phẩm", "rbxassetid://85923648556160")
 CreateTab("Câu Cá", "rbxassetid://117464735534300")
