@@ -169,7 +169,7 @@ local function EnableDraggable(dragObject, targetObject, isIcon)
     local dragMoved = false
 
     dragObject.InputBegan:Connect(function(input)
-        if not targetObject.Visible then return end
+        if not isIcon and not MainFrame.Visible then return end
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragMoved = false
@@ -189,7 +189,8 @@ local function EnableDraggable(dragObject, targetObject, isIcon)
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging and targetObject.Visible then
+        if input == dragInput and dragging then
+            if not isIcon and not MainFrame.Visible then return end
             local delta = input.Position - dragStart
             if delta.Magnitude > 8 then
                 dragMoved = true
@@ -461,9 +462,11 @@ function AddSlider(tabName, text, min, max, default, callback)
     KnobCorner.Parent = Knob
 
     SliderFrame.MouseEnter:Connect(function()
+        if not MainFrame.Visible then return end
         TweenService:Create(SliderFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.93}):Play()
     end)
     SliderFrame.MouseLeave:Connect(function()
+        if not MainFrame.Visible then return end
         TweenService:Create(SliderFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.96}):Play()
     end)
 
@@ -478,12 +481,13 @@ function AddSlider(tabName, text, min, max, default, callback)
     end
 
     SliderTrack.InputBegan:Connect(function(input)
+        if not MainFrame.Visible then return end
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             sliding = true
         end
     end)
     UserInputService.InputChanged:Connect(function(input)
-        if sliding and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
+        if sliding and MainFrame.Visible and (input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch) then
             local percentage = math.clamp((input.Position.X - SliderTrack.AbsolutePosition.X) / SliderTrack.AbsoluteSize.X, 0, 1)
             updateSliderFromValue(math.floor(min + (max - min) * percentage))
         end
@@ -548,13 +552,16 @@ function AddToggle(tabName, text, default, callback)
     DotCorner.Parent = Dot
 
     ToggleFrame.MouseEnter:Connect(function()
+        if not MainFrame.Visible then return end
         TweenService:Create(ToggleFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.93}):Play()
     end)
     ToggleFrame.MouseLeave:Connect(function()
+        if not MainFrame.Visible then return end
         TweenService:Create(ToggleFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.96}):Play()
     end)
 
     ClickBtn.MouseButton1Click:Connect(function()
+        if not MainFrame.Visible then return end
         enabled = not enabled
         local targetPos = enabled and UDim2.new(1, -15, 0, 3) or UDim2.new(0, 3, 0, 3)
         local targetColor = enabled and Color3.fromRGB(0, 200, 120) or Color3.fromRGB(50, 50, 60)
@@ -588,7 +595,7 @@ function AddDropdown(tabName, text, list, callback)
     DropBtn.Parent = DropdownFrame
 
     local Title = Instance.new("TextLabel")
-    Title.Size = UDim2.new(0, 200, 0, 42)
+    Title.Size = UDim2.new(0, 220, 0, 42)
     Title.Position = UDim2.new(0, 15, 0, 0)
     Title.Text = text
     Title.Font = Enum.Font.GothamMedium
@@ -600,8 +607,8 @@ function AddDropdown(tabName, text, list, callback)
     Title.Parent = DropdownFrame
 
     local CurrentSelect = Instance.new("TextLabel")
-    CurrentSelect.Size = UDim2.new(0, 180, 0, 42)
-    CurrentSelect.Position = UDim2.new(1, -225, 0, 0)
+    CurrentSelect.Size = UDim2.new(0, 160, 0, 42)
+    CurrentSelect.Position = UDim2.new(1, -210, 0, 0)
     CurrentSelect.Text = "Chưa Chọn"
     CurrentSelect.Font = Enum.Font.GothamMedium
     CurrentSelect.TextSize = 12
@@ -623,7 +630,6 @@ function AddDropdown(tabName, text, list, callback)
     Arrow.Parent = DropdownFrame
 
     local ListContainer = Instance.new("Frame")
-    ListContainer.Size = UDim2.new(1, -20, 0, #list * 32)
     ListContainer.Position = UDim2.new(0, 10, 0, 44)
     ListContainer.BackgroundTransparency = 1
     ListContainer.ZIndex = 5
@@ -633,10 +639,16 @@ function AddDropdown(tabName, text, list, callback)
     ListLayout.Padding = UDim.new(0, 4)
     ListLayout.Parent = ListContainer
 
+    ListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        ListContainer.Size = UDim2.new(1, -20, 0, ListLayout.AbsoluteContentSize.Y)
+    end)
+
     DropdownFrame.MouseEnter:Connect(function()
+        if not MainFrame.Visible then return end
         TweenService:Create(DropdownFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.93}):Play()
     end)
     DropdownFrame.MouseLeave:Connect(function()
+        if not MainFrame.Visible then return end
         TweenService:Create(DropdownFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.96}):Play()
     end)
 
@@ -650,6 +662,7 @@ function AddDropdown(tabName, text, list, callback)
         ItemBtn.TextSize = 12
         ItemBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
         ItemBtn.TextXAlignment = Enum.TextXAlignment.Left
+        ItemBtn.ClipsDescendants = true
         ItemBtn.ZIndex = 8
         ItemBtn.Parent = ListContainer
         
@@ -665,6 +678,7 @@ function AddDropdown(tabName, text, list, callback)
         end)
         
         ItemBtn.MouseButton1Click:Connect(function()
+            if not MainFrame.Visible then return end
             expanded = false
             CurrentSelect.Text = tostring(item)
             CurrentSelect.TextColor3 = Color3.fromRGB(0, 255, 170)
@@ -678,12 +692,14 @@ function AddDropdown(tabName, text, list, callback)
     end
 
     DropBtn.MouseButton1Click:Connect(function()
+        if not MainFrame.Visible then return end
         expanded = not expanded
         if expanded then
             DropdownFrame.ClipsDescendants = false
             DropdownFrame.ZIndex = 15
             Arrow.Text = "▲"
-            TweenService:Create(DropdownFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, 48 + (#list * 32))}):Play()
+            local targetHeight = 48 + ListLayout.AbsoluteContentSize.Y
+            TweenService:Create(DropdownFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, targetHeight)}):Play()
         else
             Arrow.Text = "▼"
             DropdownFrame.ZIndex = 4
@@ -724,7 +740,7 @@ end
 CreateTab("Farm", "rbxassetid://70492079783125")
 AddLabel("Farm", "Farm Chính")
 AddToggle("Farm", "Bật Auto Farm Level", false, function(state) end)
-AddDropdown("Farm", "Chọn Khu Vực Farm", {"Đảo Khởi Đầu", "Đảo Sa Mạc", "Tuyết Sơn", "Đảo Bầu Trời"}, function(island) end)
+AddDropdown("Farm", "Chọn Khu Vực Farm", {"Đảo Khởi Đầu", "Đảo Sa Mạc", "Tuyết Sơn", "Đảo Bầu Trời", "Đảo Ma Quỷ"}, function(island) end)
 
 CreateTab("Nhiệm Vụ & Vật Phẩm", "rbxassetid://85923648556160")
 CreateTab("Câu Cá", "rbxassetid://117464735534300")
@@ -825,6 +841,7 @@ NoCorner.CornerRadius = UDim.new(0, 6)
 NoCorner.Parent = NoBtn
 
 ShutDownBtn.MouseButton1Click:Connect(function()
+    if not MainFrame.Visible then return end
     ConfirmFrame.Visible = true
     TweenService:Create(ConfirmFrame, TweenInfo.new(0.3, Enum.EasingStyle.Back), {Size = UDim2.new(0, 300, 0, 140)}):Play()
 end)
