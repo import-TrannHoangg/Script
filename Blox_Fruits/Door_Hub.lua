@@ -2,6 +2,9 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
+local CurrentWalkSpeed = 16
+local CurrentJumpPower = 50
+
 local CustomHub = Instance.new("ScreenGui")
 CustomHub.Name = "Door_Hub"
 CustomHub.Parent = CoreGui
@@ -778,29 +781,36 @@ CreateTab("Thị Giác", "rbxassetid://137611999012404")
 
 CreateTab("Cài Đặt", "rbxassetid://70767352650956")
 AddLabel("Cài Đặt", "Cài Đặt Hệ Thống")
-AddSlider("Cài Đặt", "Tốc Độ Chạy (Walk Speed)", 16, 250, 16, function(value)
+AddSlider("Cài Đặt", "Tốc Độ Chạy (WalkSpeed)", 16, 250, 16, function(value)
+    CurrentWalkSpeed = value
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
     end
 end)
 
-local function ApplyJumpPower(value)
+local function ApplySavedStats(character)
+    local humanoid = character:WaitForChild("Humanoid", 10)
+    if humanoid then
+        humanoid.WalkSpeed = CurrentWalkSpeed
+        
+        humanoid.UseJumpPower = true
+        humanoid.JumpPower = CurrentJumpPower
+    end
+end
+
+game.Players.LocalPlayer.CharacterAdded:Connect(ApplySavedStats)
+
+if game.Players.LocalPlayer.Character then
+    ApplySavedStats(game.Players.LocalPlayer.Character)
+end
+
+AddSlider("Cài Đặt", "Độ Cao Nhảy (JumpPower)", 50, 300, 50, function(value)
+    CurrentJumpPower = value
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         local humanoid = game.Players.LocalPlayer.Character.Humanoid
         humanoid.UseJumpPower = true
         humanoid.JumpPower = value
     end
-end
-
-game.Players.LocalPlayer.CharacterAdded:Connect(function(char)
-    local humanoid = char:WaitForChild("Humanoid")
-    local currentValue = tonumber(Pages["Cài Đặt"]:FindFirstChild("Độ Cao Nhảy (Jump Power)") and Pages["Cài Đặt"]["Độ Cao Nhảy (Jump Power)"]:FindFirstChild("TextBox") and Pages["Cài Đặt"]["Độ Cao Nhảy (Jump Power)"].TextBox.Text) or 50
-    humanoid.UseJumpPower = true
-    humanoid.JumpPower = currentValue
-end)
-
-AddSlider("Cài Đặt", "Độ Cao Nhảy (Jump Power)", 50, 300, 50, function(value)
-    ApplyJumpPower(value)
 end)
 
 CreateTab("Cửa Hàng", "rbxassetid://91250120807261")
