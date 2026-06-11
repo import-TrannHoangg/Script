@@ -1006,8 +1006,12 @@ end
 local function Attack()
     RegisterAttack:FireServer(0.5)
     task.wait()
+    
+    local hitPart = TargetCharacter:FindFirstChild("RightLowerLeg") or TargetCharacter:FindFirstChild("HumanoidRootPart")  
+    if not hitPart then return end
+    
     local dataTable = {
-        TargetCharacter:WaitForChild("RightLowerLeg"),
+        hitPart,
         {},
         nil,
         GetSessionID()
