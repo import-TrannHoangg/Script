@@ -643,7 +643,7 @@ function AddDropdown(tabName, text, list, callback)
     Arrow.Position = UDim2.new(1, -35, 0, 0)
     Arrow.Text = "v"
     Arrow.Font = Enum.Font.GothamBold
-    Arrow.TextSize = 10
+    Arrow.TextSize = 15
     Arrow.TextColor3 = Color3.fromRGB(150, 150, 150)
     Arrow.BackgroundTransparency = 1
     Arrow.ZIndex = 5
@@ -679,7 +679,7 @@ function AddDropdown(tabName, text, list, callback)
         ItemBtn.BackgroundTransparency = 0.97
         ItemBtn.Text = "   " .. tostring(item)
         ItemBtn.Font = Enum.Font.Gotham
-        ItemBtn.TextSize = 18
+        ItemBtn.TextSize = 12
         ItemBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
         ItemBtn.TextXAlignment = Enum.TextXAlignment.Left
         ItemBtn.ClipsDescendants = true
@@ -703,7 +703,7 @@ function AddDropdown(tabName, text, list, callback)
             CurrentSelect.Text = tostring(item)
             CurrentSelect.TextColor3 = Color3.fromRGB(0, 255, 170)
             Arrow.Text = "v"
-            DropdownFrame.ZIndex = 4
+            DropdownFrame.ZIndex = 8
             TweenService:Create(DropdownFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, 42)}):Play()
             task.wait(0.3)
             DropdownFrame.ClipsDescendants = true
@@ -722,7 +722,7 @@ function AddDropdown(tabName, text, list, callback)
             TweenService:Create(DropdownFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, targetHeight)}):Play()
         else
             Arrow.Text = "^"
-            DropdownFrame.ZIndex = 4
+            DropdownFrame.ZIndex = 8
             TweenService:Create(DropdownFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, 42)}):Play()
             task.wait(0.3)
             if not expanded then DropdownFrame.ClipsDescendants = true end
