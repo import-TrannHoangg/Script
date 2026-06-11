@@ -169,6 +169,7 @@ local function EnableDraggable(dragObject, targetObject, isIcon)
     local dragMoved = false
 
     dragObject.InputBegan:Connect(function(input)
+        if not targetObject.Visible then return end
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragMoved = false
@@ -188,7 +189,7 @@ local function EnableDraggable(dragObject, targetObject, isIcon)
     end)
 
     UserInputService.InputChanged:Connect(function(input)
-        if input == dragInput and dragging then
+        if input == dragInput and dragging and targetObject.Visible then
             local delta = input.Position - dragStart
             if delta.Magnitude > 8 then
                 dragMoved = true
@@ -587,7 +588,7 @@ function AddDropdown(tabName, text, list, callback)
     DropBtn.Parent = DropdownFrame
 
     local Title = Instance.new("TextLabel")
-    Title.Size = UDim2.new(0.5, 0, 1, 0)
+    Title.Size = UDim2.new(0, 200, 0, 42)
     Title.Position = UDim2.new(0, 15, 0, 0)
     Title.Text = text
     Title.Font = Enum.Font.GothamMedium
@@ -599,8 +600,8 @@ function AddDropdown(tabName, text, list, callback)
     Title.Parent = DropdownFrame
 
     local CurrentSelect = Instance.new("TextLabel")
-    CurrentSelect.Size = UDim2.new(0.4, 0, 0, 42)
-    CurrentSelect.Position = UDim2.new(1, -55, 0, 0)
+    CurrentSelect.Size = UDim2.new(0, 180, 0, 42)
+    CurrentSelect.Position = UDim2.new(1, -225, 0, 0)
     CurrentSelect.Text = "Chưa Chọn"
     CurrentSelect.Font = Enum.Font.GothamMedium
     CurrentSelect.TextSize = 12
@@ -612,7 +613,7 @@ function AddDropdown(tabName, text, list, callback)
 
     local Arrow = Instance.new("TextLabel")
     Arrow.Size = UDim2.new(0, 20, 0, 42)
-    Arrow.Position = UDim2.new(1, -25, 0, 0)
+    Arrow.Position = UDim2.new(1, -35, 0, 0)
     Arrow.Text = "▼"
     Arrow.Font = Enum.Font.GothamBold
     Arrow.TextSize = 10
@@ -644,7 +645,7 @@ function AddDropdown(tabName, text, list, callback)
         ItemBtn.Size = UDim2.new(1, 0, 0, 28)
         ItemBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
         ItemBtn.BackgroundTransparency = 0.97
-        ItemBtn.Text = "  " .. tostring(item)
+        ItemBtn.Text = "   " .. tostring(item)
         ItemBtn.Font = Enum.Font.Gotham
         ItemBtn.TextSize = 12
         ItemBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
