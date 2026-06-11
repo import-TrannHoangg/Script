@@ -2,11 +2,10 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
-local RunService = game:GetService("RunService")
 local Workspace = game:GetService("Workspace")
+local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-
-local Net = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
+local Net = ReplicatedStorage.Modules.Net
 local RegisterAttack = Net["RE/RegisterAttack"]
 local RegisterHit = Net["RE/RegisterHit"]
 
@@ -989,48 +988,43 @@ task.spawn(function()
 end)
 
 local function GetCharacter()
-    return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+    return LocalPlayer.Character or (LocalPlayer.CharacterAdded:wait() and LocalPlayer.Character)
 end
 
-local CachedSessionID = nil
 local function GetSessionID()
-    if CachedSessionID then return CachedSessionID end
-    
-    local success, err = pcall(function()
-        local SendHitsToServer = getrenv()._G.SendHitsToServer
-        local CombatThread = getupvalues(SendHitsToServer)[1]
+    local SendHitsToServer = getrenv()._G.SendHitsToServer
+    local CombatThread = getupvalues(SendHitsToServer)[1]
 
-        local UserIDSlice = tostring(LocalPlayer.UserId):sub(2, 4)
-        local MemorySlice = tostring(CombatThread):sub(11, 15)
+    local UserIDSlice = tostring(LocalPlayer.UserId):sub(2, 4)
+    local MemorySlice = tostring(CombatThread):sub(11, 15)
 
-        CachedSessionID = UserIDSlice .. MemorySlice
-    end)
-    
-    return CachedSessionID or ""
+    local SessionID = UserIDSlice .. MemorySlice
+
+    return SessionID
 end
-
-local TargetCharacter = nil 
 
 local function Attack()
-    if not TargetCharacter then return end
-    
-    local targetPart = TargetCharacter:FindFirstChild("RightLowerLeg") or TargetCharacter:FindFirstChild("HumanoidRootPart")
-    if not targetPart then return end
-
     RegisterAttack:FireServer(0.5)
-    task.wait(0.05)
-    
+
+    local Leg = TargetCharacter and TargetCharacter:FindFirstChild("RightLowerLeg")
+    if not Leg then
+        return
+    end
+
     local dataTable = {
-        targetPart,
+        Leg,
         {},
         nil,
         GetSessionID()
     }
+
     RegisterHit:FireServer(unpack(dataTable))
 end
 
+TargetCharacter = nil 
+
 task.spawn(function()
-    while task.wait(0.1) do 
+    while task.wait(0.1) do
         local MyChar = GetCharacter()
         local MyRoot = MyChar and MyChar:FindFirstChild("HumanoidRootPart")
         
@@ -1038,28 +1032,29 @@ task.spawn(function()
             local ClosestTarget = nil
             local ShortestDistance = math.huge
             
-            for _, player in pairs(Players:GetPlayers()) do
-                if player ~= LocalPlayer then
-                    local char = player.Character
-                    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
-                    local targetRoot = char and char:FindFirstChild("HumanoidRootPart")
-                    
-                    if humanoid and humanoid.Health > 0 and targetRoot then
-                        local Distance = (MyRoot.Position - targetRoot.Position).Magnitude
-                        
-                        if Distance <= 30 and Distance < ShortestDistance then
+            for _, v in pairs(workspace:GetChildren()) do
+                if v:IsA("Humanoid") and v.Health > 0 and v.Parent ~= MyChar then
+                    local TargetRoot = v.Parent:FindFirstChild("HumanoidRootPart")
+                    if TargetRoot then
+                        local Distance = (MyRoot.Position - TargetRoot.Position).Magnitude
+                        if Distance < ShortestDistance then
                             ShortestDistance = Distance
-                            ClosestTarget = char
+                            ClosestTarget = v.Parent
                         end
                     end
                 end
             end
             
-            TargetCharacter = ClosestTarget
+            if ClosestTarget then
+                TargetCharacter = ClosestTarget
+            end
         end
     end
 end)
 
-while task.wait(0.1) do 
-    Attack()
+while true do
+    task.wait(0.1)
+    if TargetCharacter then
+        Attack()
+    end
 end
