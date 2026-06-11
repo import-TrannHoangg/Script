@@ -35,27 +35,23 @@ IconGradient.Parent = OpenIcon
 
 local dragging = false
 local dragStart, startPos
-local targetPos = OpenIcon.Position
+local dragMoved = false
 
 OpenIcon.AnchorPoint = Vector2.new(0.5, 0.5)
-
-task.spawn(function()
-    while task.wait() do
-        if dragging then
-            OpenIcon.Position = OpenIcon.Position:Lerp(targetPos, 0.10)
-        end
-    end
-end)
 
 local function updateTarget(input)
     local delta = input.Position - dragStart
 
-    targetPos = UDim2.new(
+    OpenIcon.Position = UDim2.new(
         startPos.X.Scale,
         startPos.X.Offset + delta.X,
         startPos.Y.Scale,
         startPos.Y.Offset + delta.Y
     )
+    
+    if delta.Magnitude > 5 then
+        dragMoved = true
+    end
 end
 
 OpenIcon.InputBegan:Connect(function(input)
@@ -63,6 +59,7 @@ OpenIcon.InputBegan:Connect(function(input)
     or input.UserInputType == Enum.UserInputType.Touch then
 
         dragging = true
+        dragMoved = false
         dragStart = input.Position
         startPos = OpenIcon.Position
 
@@ -86,18 +83,19 @@ end)
 UserInputService.InputEnded:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1
     or input.UserInputType == Enum.UserInputType.Touch then
+        if dragging then
+            dragging = false
 
-        dragging = false
-
-        TweenService:Create(OpenIcon, TweenInfo.new(0.25, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
-            Position = targetPos
-        }):Play()
-
-        task.delay(0.1, function()
             TweenService:Create(OpenIcon, TweenInfo.new(0.18, Enum.EasingStyle.Back, Enum.EasingDirection.Out), {
                 Size = UDim2.new(0, 50, 0, 50)
             }):Play()
-        end)
+
+            if not dragMoved then
+                MainFrame.Visible = true
+                GlowBackground.Visible = true
+                OpenIcon.Visible = false
+            end
+        end
     end
 end)
 
@@ -205,8 +203,9 @@ ShutDownBtn.Position = UDim2.new(1, -45, 0, 11)
 ShutDownBtn.BackgroundTransparency = 1
 ShutDownBtn.Text = "X"
 ShutDownBtn.Font = Enum.Font.GothamBold
-ShutDownBtn.TextSize = 14
+ShutDownBtn.TextSize = 13
 ShutDownBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ShutDownBtn.TextYAlignment = Enum.TextYAlignment.Center
 ShutDownBtn.ZIndex = 3
 ShutDownBtn.Parent = TitleBar
 
@@ -214,10 +213,11 @@ local CloseBtn = Instance.new("TextButton")
 CloseBtn.Size = UDim2.new(0, 28, 0, 28)
 CloseBtn.Position = UDim2.new(1, -85, 0, 11)
 CloseBtn.BackgroundTransparency = 1
-CloseBtn.Text = "-"
+CloseBtn.Text = "—"
 CloseBtn.Font = Enum.Font.GothamBold
-CloseBtn.TextSize = 18
-CloseBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+CloseBtn.TextSize = 15
+CloseBtn.LineHeight = 0.8
+CloseBtn.TextYAlignment = Enum.TextYAlignment.Center
 CloseBtn.ZIndex = 3
 CloseBtn.Parent = TitleBar
 
@@ -691,7 +691,7 @@ CreateTab("Thị Giác", "rbxassetid://137611999012404")
 
 CreateTab("Cài Đặt", "rbxassetid://70767352650956")
 AddLabel("Cài Đặt", "Cài Đặt Hệ Thống")
-AddSlider("Cài Đặt", "Tốc độ chạy (WalkSpeed)", 16, 250, 16, function(value)
+AddSlider("Cài Đặt", "Tốc Độ Chạy (WalkSpeed)", 16, 250, 16, function(value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
     end
@@ -712,7 +712,7 @@ game.Players.LocalPlayer.CharacterAdded:Connect(function(char)
     humanoid.JumpPower = currentValue
 end)
 
-AddSlider("Cài Đặt", "Độ cao nhảy (JumpPower)", 50, 300, 50, function(value)
+AddSlider("Cài Đặt", "Độ Cao Nhảy (JumpPower)", 50, 300, 50, function(value)
     ApplyJumpPower(value)
 end)
 
@@ -742,7 +742,7 @@ local ConfirmText = Instance.new("TextLabel")
 ConfirmText.Size = UDim2.new(1, -20, 0, 50)
 ConfirmText.Position = UDim2.new(0, 10, 0, 15)
 ConfirmText.BackgroundTransparency = 1
-ConfirmText.Text = "Bạn có chắc chắn muốn tắt UI không?"
+ConfirmText.Text = "Bạn có chắc chắn muốn tắt UI không ?"
 ConfirmText.Font = Enum.Font.GothamMedium
 ConfirmText.TextSize = 14
 ConfirmText.TextColor3 = Color3.fromRGB(240, 240, 240)
@@ -796,14 +796,6 @@ CloseBtn.MouseButton1Click:Connect(function()
     MainFrame.Visible = false
     GlowBackground.Visible = false
     OpenIcon.Visible = true
-end)
-
-OpenIcon.MouseButton1Click:Connect(function()
-    if not dragging then
-        MainFrame.Visible = true
-        GlowBackground.Visible = true
-        OpenIcon.Visible = false
-    end
 end)
 
 task.spawn(function()
