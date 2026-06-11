@@ -1006,12 +1006,8 @@ end
 local function Attack()
     RegisterAttack:FireServer(0.5)
     task.wait()
-    
-    local hitPart = TargetCharacter:FindFirstChild("RightLowerLeg") or TargetCharacter:FindFirstChild("HumanoidRootPart")  
-    if not hitPart then return end
-    
     local dataTable = {
-        hitPart,
+        TargetCharacter:WaitForChild("RightLowerLeg"),
         {},
         nil,
         GetSessionID()
@@ -1027,9 +1023,12 @@ local function GetNearestTarget()
     if not hrp then return nil end
 
     local nearest = nil
-    local nearestDist = math.huge
+    local nearestDist = 20
 
-    for _, obj in ipairs(workspace:GetChildren()) do
+    local Enemies = workspace:FindFirstChild("Enemies")
+    local scanList = Enemies and Enemies:GetChildren() or workspace:GetChildren()
+
+    for _, obj in ipairs(scanList) do
         if obj:IsA("Model") and obj ~= character then
             local hum = obj:FindFirstChildOfClass("Humanoid")
             local targetHRP = obj:FindFirstChild("HumanoidRootPart")
