@@ -641,7 +641,7 @@ function AddDropdown(tabName, text, list, callback)
     local Arrow = Instance.new("TextLabel")
     Arrow.Size = UDim2.new(0, 20, 0, 42)
     Arrow.Position = UDim2.new(1, -35, 0, 0)
-    Arrow.Text = "v"
+    Arrow.Text = "▼"
     Arrow.Font = Enum.Font.GothamBold
     Arrow.TextSize = 15
     Arrow.TextColor3 = Color3.fromRGB(150, 150, 150)
@@ -702,7 +702,7 @@ function AddDropdown(tabName, text, list, callback)
             expanded = false
             CurrentSelect.Text = tostring(item)
             CurrentSelect.TextColor3 = Color3.fromRGB(0, 255, 170)
-            Arrow.Text = "v"
+            Arrow.Text = "▼"
             DropdownFrame.ZIndex = 8
             TweenService:Create(DropdownFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, 42)}):Play()
             task.wait(0.3)
@@ -717,11 +717,11 @@ function AddDropdown(tabName, text, list, callback)
         if expanded then
             DropdownFrame.ClipsDescendants = false
             DropdownFrame.ZIndex = 15
-            Arrow.Text = "^"
+            Arrow.Text = "▲"
             local targetHeight = 48 + ListLayout.AbsoluteContentSize.Y
             TweenService:Create(DropdownFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, targetHeight)}):Play()
         else
-            Arrow.Text = "^"
+            Arrow.Text = "▲"
             DropdownFrame.ZIndex = 8
             TweenService:Create(DropdownFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, 42)}):Play()
             task.wait(0.3)
@@ -757,6 +757,80 @@ function AddLabel(tabName, text)
     Gradient.Parent = Label
 end
 
+function AddInput(tabName, text, placeholder, callback)
+    local page = Pages[tabName]
+
+    local InputFrame = Instance.new("Frame")
+    InputFrame.Size = UDim2.new(1, -10, 0, 42)
+    InputFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    InputFrame.BackgroundTransparency = 0.96
+    InputFrame.ZIndex = 4
+    InputFrame.Parent = page
+
+    local IFCorner = Instance.new("UICorner")
+    IFCorner.CornerRadius = UDim.new(0, 8)
+    IFCorner.Parent = InputFrame
+
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(0.6, 0, 1, 0)
+    Label.Position = UDim2.new(0, 15, 0, 0)
+    Label.Text = text
+    Label.Font = Enum.Font.GothamMedium
+    Label.TextSize = 13
+    Label.TextColor3 = Color3.fromRGB(210, 210, 210)
+    Label.TextXAlignment = Enum.TextXAlignment.Left
+    Label.BackgroundTransparency = 1
+    Label.ZIndex = 4
+    Label.Parent = InputFrame
+
+    local TextBox = Instance.new("TextBox")
+    TextBox.Size = UDim2.new(0.35, 0, 0, 26)
+    TextBox.Position = UDim2.new(1, -15, 0.5, -13)
+    TextBox.AnchorPoint = Vector2.new(1, 0)
+    TextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    TextBox.BackgroundTransparency = 0.95
+    TextBox.Text = ""
+    TextBox.PlaceholderText = placeholder or "Nhập Ở Đây"
+    TextBox.PlaceholderColor3 = Color3.fromRGB(100, 100, 110)
+    TextBox.Font = Enum.Font.GothamMedium
+    TextBox.TextSize = 12
+    TextBox.TextColor3 = Color3.fromRGB(0, 255, 170)
+    TextBox.ClearTextOnFocus = false
+    TextBox.ZIndex = 5
+    TextBox.Parent = InputFrame
+
+    local TBCorner = Instance.new("UICorner")
+    TBCorner.CornerRadius = UDim.new(0, 6)
+    TBCorner.Parent = TextBox
+
+    local TBCornerStroke = Instance.new("UIStroke")
+    TBCornerStroke.Thickness = 1
+    TBCornerStroke.Color = Color3.fromRGB(50, 50, 60)
+    TBCornerStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    TBCornerStroke.Parent = TextBox
+
+    InputFrame.MouseEnter:Connect(function()
+        if not MainFrame.Visible then return end
+        TweenService:Create(InputFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.93}):Play()
+        TweenService:Create(TBCornerStroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(0, 213, 255)}):Play()
+    end)
+    InputFrame.MouseLeave:Connect(function()
+        if not MainFrame.Visible then return end
+        TweenService:Create(InputFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.96}):Play()
+        TweenService:Create(TBCornerStroke, TweenInfo.new(0.2), {Color = Color3.fromRGB(50, 50, 60)}):Play()
+    end)
+
+    TextBox.Focused:Connect(function()
+        TweenService:Create(TBCornerStroke, TweenInfo.new(0.15), {Color = Color3.fromRGB(0, 255, 170)}):Play()
+    end)
+
+    TextBox.FocusLost:Connect(function(enterPressed)
+        TweenService:Create(TBCornerStroke, TweenInfo.new(0.15), {Color = Color3.fromRGB(50, 50, 60)}):Play()
+        
+        pcall(callback, TextBox.Text)
+    end)
+end
+
 CreateTab("Farm", "rbxassetid://70492079783125")
 AddLabel("Farm", "Farm Chính")
 
@@ -769,6 +843,10 @@ AddToggle("Farm", "Bật Auto Farm Level", false, function(state)
 end)
 
 AddDropdown("Farm", "Chọn Khu Vực Farm", {"Đảo Khởi Đầu", "Đảo Sa Mạc", "Tuyết Sơn", "Đảo Bầu Trời", "Đảo Ma Quỷ"}, function(island) end)
+
+AddInput("Farm", "Nhập Số", "Ví Dụ : 6736", function(text)
+    print("Nhập Số : " .. text)
+end)
 
 CreateTab("Nhiệm Vụ & Vật Phẩm", "rbxassetid://85923648556160")
 CreateTab("Câu Cá", "rbxassetid://117464735534300")
