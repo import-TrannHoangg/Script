@@ -1005,55 +1005,48 @@ end
 
 local function Attack()
     RegisterAttack:FireServer(0.5)
-
-    local Leg = TargetCharacter and TargetCharacter:FindFirstChild("RightLowerLeg")
-    if not Leg then
-        return
-    end
-
+    task.wait()
     local dataTable = {
-        Leg,
+        TargetCharacter:WaitForChild("RightLowerLeg"),
         {},
         nil,
         GetSessionID()
     }
-
     RegisterHit:FireServer(unpack(dataTable))
 end
 
-TargetCharacter = nil 
+local function GetNearestTarget()
+    local character = GetCharacter()
+    if not character then return nil end
+    
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return nil end
 
-task.spawn(function()
-    while task.wait(0.1) do
-        local MyChar = GetCharacter()
-        local MyRoot = MyChar and MyChar:FindFirstChild("HumanoidRootPart")
-        
-        if MyRoot then
-            local ClosestTarget = nil
-            local ShortestDistance = math.huge
-            
-            for _, v in pairs(workspace:GetChildren()) do
-                if v:IsA("Humanoid") and v.Health > 0 and v.Parent ~= MyChar then
-                    local TargetRoot = v.Parent:FindFirstChild("HumanoidRootPart")
-                    if TargetRoot then
-                        local Distance = (MyRoot.Position - TargetRoot.Position).Magnitude
-                        if Distance < ShortestDistance then
-                            ShortestDistance = Distance
-                            ClosestTarget = v.Parent
-                        end
-                    end
+    local nearest = nil
+    local nearestDist = math.huge
+
+    for _, obj in ipairs(workspace:GetChildren()) do
+        if obj:IsA("Model") and obj ~= character then
+            local hum = obj:FindFirstChildOfClass("Humanoid")
+            local targetHRP = obj:FindFirstChild("HumanoidRootPart")
+            if hum and hum.Health > 0 and targetHRP then
+                local dist = (hrp.Position - targetHRP.Position).Magnitude
+                if dist < nearestDist then
+                    nearestDist = dist
+                    nearest = obj
                 end
-            end
-            
-            if ClosestTarget then
-                TargetCharacter = ClosestTarget
             end
         end
     end
-end)
+
+    return nearest
+end
+
+TargetCharacter = nil
 
 while true do
     task.wait(0.1)
+    TargetCharacter = GetNearestTarget()
     if TargetCharacter then
         Attack()
     end
