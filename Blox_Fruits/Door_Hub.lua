@@ -209,19 +209,32 @@ local function EnableDraggable(dragObject, targetObject, isIcon)
         end
     end)
 
+     dragObject.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+            if dragging then
+                dragging = false
+                if isIcon then
+                    TweenService:Create(dragObject, TweenInfo.new(0.15, Enum.EasingStyle.Back), {Size = UDim2.new(0, 55, 0, 55)}):Play()
+                    if not dragMoved and OpenIcon.Visible then
+                        OpenIcon.Visible = false
+                        MainFrame.Visible = true
+                        GlowBackground.Visible = true
+                        MainFrame.Size = UDim2.new(0, 0, 0, 0)
+                        GlowBackground.Size = UDim2.new(0, 0, 0, 0)
+                        TweenService:Create(MainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Back), {Size = UDim2.new(0, MainFrameWidth, 0, MainFrameHeight)}):Play()
+                        TweenService:Create(GlowBackground, TweenInfo.new(0.35, Enum.EasingStyle.Back), {Size = UDim2.new(0, MainFrameWidth + 6, 0, MainFrameHeight + 6)}):Play()
+                    end
+                end
+            end
+        end
+    end)
+
     UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-            dragging = false
-            if isIcon then
-                TweenService:Create(dragObject, TweenInfo.new(0.15, Enum.EasingStyle.Back), {Size = UDim2.new(0, 55, 0, 55)}):Play()
-                if not dragMoved and OpenIcon.Visible then
-                    OpenIcon.Visible = false
-                    MainFrame.Visible = true
-                    GlowBackground.Visible = true
-                    MainFrame.Size = UDim2.new(0, 0, 0, 0)
-                    GlowBackground.Size = UDim2.new(0, 0, 0, 0)
-                    TweenService:Create(MainFrame, TweenInfo.new(0.35, Enum.EasingStyle.Back), {Size = UDim2.new(0, MainFrameWidth, 0, MainFrameHeight)}):Play()
-                    TweenService:Create(GlowBackground, TweenInfo.new(0.35, Enum.EasingStyle.Back), {Size = UDim2.new(0, MainFrameWidth + 6, 0, MainFrameHeight + 6)}):Play()
+            if dragging then
+                dragging = false
+                if isIcon then
+                    TweenService:Create(dragObject, TweenInfo.new(0.15, Enum.EasingStyle.Back), {Size = UDim2.new(0, 55, 0, 55)}):Play()
                 end
             end
         end
@@ -540,6 +553,10 @@ function AddToggle(tabName, text, default, callback)
     Switch.ZIndex = 4
     Switch.Parent = ToggleFrame
 
+    local SwitchCorner = Instance.new("UICorner")
+    SwitchCorner.CornerRadius = UDim.new(1, 0)
+    SwitchCorner.Parent = Switch
+
     local Dot = Instance.new("Frame")
     Dot.Size = UDim2.new(0, 12, 0, 12)
     Dot.Position = enabled and UDim2.new(1, -15, 0, 3) or UDim2.new(0, 3, 0, 3)
@@ -739,7 +756,15 @@ end
 
 CreateTab("Farm", "rbxassetid://70492079783125")
 AddLabel("Farm", "Farm Chính")
-AddToggle("Farm", "Bật Auto Farm Level", false, function(state) end)
+
+AddToggle("Farm", "Bật Auto Farm Level", false, function(state)
+    if state then
+        print("Đã bật Auto Farm")
+    else
+        print("Đã tắt Auto Farm")
+    end
+end)
+
 AddDropdown("Farm", "Chọn Khu Vực Farm", {"Đảo Khởi Đầu", "Đảo Sa Mạc", "Tuyết Sơn", "Đảo Bầu Trời", "Đảo Ma Quỷ"}, function(island) end)
 
 CreateTab("Nhiệm Vụ & Vật Phẩm", "rbxassetid://85923648556160")
@@ -753,7 +778,7 @@ CreateTab("Thị Giác", "rbxassetid://137611999012404")
 
 CreateTab("Cài Đặt", "rbxassetid://70767352650956")
 AddLabel("Cài Đặt", "Cài Đặt Hệ Thống")
-AddSlider("Cài Đặt", "Tốc Độ Chạy (WalkSpeed)", 16, 250, 16, function(value)
+AddSlider("Cài Đặt", "Tốc Độ Chạy (Walk Speed)", 16, 250, 16, function(value)
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
     end
@@ -769,12 +794,12 @@ end
 
 game.Players.LocalPlayer.CharacterAdded:Connect(function(char)
     local humanoid = char:WaitForChild("Humanoid")
-    local currentValue = tonumber(Pages["Cài Đặt"]:FindFirstChild("Độ cao nhảy (JumpPower)") and Pages["Cài Đặt"]["Độ cao nhảy (JumpPower)"]:FindFirstChild("TextBox") and Pages["Cài Đặt"]["Độ cao nhảy (JumpPower)"].TextBox.Text) or 50
+    local currentValue = tonumber(Pages["Cài Đặt"]:FindFirstChild("Độ Cao Nhảy (Jump Power)") and Pages["Cài Đặt"]["Độ Cao Nhảy (Jump Power)"]:FindFirstChild("TextBox") and Pages["Cài Đặt"]["Độ Cao Nhảy (Jump Power)"].TextBox.Text) or 50
     humanoid.UseJumpPower = true
     humanoid.JumpPower = currentValue
 end)
 
-AddSlider("Cài Đặt", "Độ Cao Nhảy (JumpPower)", 50, 300, 50, function(value)
+AddSlider("Cài Đặt", "Độ Cao Nhảy (Jump Power)", 50, 300, 50, function(value)
     ApplyJumpPower(value)
 end)
 
