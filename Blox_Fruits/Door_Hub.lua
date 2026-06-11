@@ -2,6 +2,15 @@ local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
 
+local RunService = game:GetService("RunService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Net = ReplicatedStorage.Modules.Net
+local RegisterAttack = Net["RE/RegisterAttack"]
+local RegisterHit = Net["RE/RegisterHit"]
+
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
 local CurrentWalkSpeed = 16
 local CurrentJumpPower = 50
 
@@ -834,6 +843,70 @@ end
 CreateTab("Farm", "rbxassetid://70492079783125")
 AddLabel("Farm", "Farm Chính")
 
+local function GetCharacter()
+    return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+end
+
+local function GetSessionID()
+    local SendHitsToServer = getrenv()._G.SendHitsToServer
+    local CombatThread = getupvalues(SendHitsToServer)[1]
+    local UserIDSlice = tostring(LocalPlayer.UserId):sub(2, 4)
+    local MemorySlice = tostring(CombatThread):sub(11, 15)
+    return UserIDSlice .. MemorySlice
+end
+
+local function Attack(TargetCharacter)
+    RegisterAttack:FireServer(0.5)
+    task.wait()
+    local HitPart = TargetCharacter:FindFirstChild("RightLowerLeg") or TargetCharacter:FindFirstChild("HumanoidRootPart") or TargetCharacter:FindFirstChild("Head")
+    
+    if HitPart then
+        local dataTable = {
+            HitPart,
+            {},
+            nil,
+            GetSessionID()
+        }
+        RegisterHit:FireServer(unpack(dataTable))
+    end
+end
+
+local function GetAllTargets()
+    local Targets = {}
+    local MyChar = GetCharacter()
+
+    for _, obj in pairs(workspace:GetDescendants()) do
+        if obj:IsA("Humanoid") and obj.Health > 0 then
+            local Char = obj.Parent
+            if Char and Char ~= MyChar and Char:FindFirstChild("HumanoidRootPart") then
+                table.insert(Targets, Char)
+            end
+        end
+    end
+    return Targets
+end
+
+while true do
+    local Character = GetCharacter()
+    local RootPart = Character:FindFirstChild("HumanoidRootPart")
+    
+    if RootPart then
+        local Targets = GetAllTargets()
+        
+        for _, Target in pairs(Targets) do
+            local TargetHumanoid = Target:FindFirstChild("Humanoid")
+            local TargetRootPart = Target:FindFirstChild("HumanoidRootPart")
+            
+            while TargetHumanoid and TargetHumanoid.Health > 0 and TargetRootPart and Character:IsDescendantOf(workspace) do
+                RootPart.CFrame = CFrame.new(TargetRootPart.Position) * CFrame.new(0, 57, 0)
+                RootPart.Velocity = Vector3.new(0, 0, 0)
+                
+                Attack(Target)
+            end
+        end
+    end
+end
+
 AddToggle("Farm", "Bật Auto Farm Level", false, function(state)
     if state then
         print("Đã bật Auto Farm")
@@ -859,7 +932,7 @@ CreateTab("Thị Giác", "rbxassetid://137611999012404")
 
 CreateTab("Cài Đặt", "rbxassetid://70767352650956")
 AddLabel("Cài Đặt", "Cài Đặt Hệ Thống")
-AddSlider("Cài Đặt", "Tốc Độ Chạy (WalkSpeed)", 16, 250, 16, function(value)
+AddSlider("Cài Đặt", "Tốc Độ Chạy (Walk Speed)", 16, 250, 16, function(value)
     CurrentWalkSpeed = value
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = value
@@ -882,7 +955,7 @@ if game.Players.LocalPlayer.Character then
     ApplySavedStats(game.Players.LocalPlayer.Character)
 end
 
-AddSlider("Cài Đặt", "Độ Cao Nhảy (JumpPower)", 50, 300, 50, function(value)
+AddSlider("Cài Đặt", "Độ Cao Nhảy (Jump Power)", 50, 300, 50, function(value)
     CurrentJumpPower = value
     if game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:FindFirstChild("Humanoid") then
         local humanoid = game.Players.LocalPlayer.Character.Humanoid
