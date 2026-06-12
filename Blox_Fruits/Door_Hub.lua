@@ -2549,15 +2549,17 @@ local function GetCharacter()
 end
 
 local function GetSessionID()
-    local SendHitsToServer = getrenv()._G.SendHitsToServer
-    local CombatThread = getupvalues(SendHitsToServer)[1]
+    local ok, result = pcall(function()
+        local SendHitsToServer = getrenv()._G.SendHitsToServer
+        if not SendHitsToServer then return nil end
+        local CombatThread = getupvalues(SendHitsToServer)[1]
 
-    local UserIDSlice = tostring(LocalPlayer.UserId):sub(2, 4)
-    local MemorySlice = tostring(CombatThread):sub(11, 15)
+        local UserIDSlice = tostring(LocalPlayer.UserId):sub(2, 4)
+        local MemorySlice = tostring(CombatThread):sub(11, 15)
 
-    local SessionID = UserIDSlice .. MemorySlice
-
-    return SessionID
+        return UserIDSlice .. MemorySlice
+    end)
+    return ok and result or nil
 end
 
 TargetCharacter = nil
@@ -2606,7 +2608,6 @@ end
 
 task.spawn(function()
     while true do
-        task.wait(0.1)
         TargetCharacter = GetNearestTarget()
         if TargetCharacter then
             Attack()
