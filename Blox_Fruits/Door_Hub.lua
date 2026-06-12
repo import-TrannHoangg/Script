@@ -22,8 +22,38 @@ local CurrentJumpPower = 50
 _G.Configs = {
     AutoFarmLevel = false,
     BringMob = true,
-    SelectWeaponFarm = "Melee"
+    SelectWeaponFarm = "Melee",
+    StartFarm = false,
+    SafeFarm = true
 }
+
+local BringMobFarm = false
+
+local function GetCharacter()
+    return LocalPlayer.Character or LocalPlayer.CharacterAdded:Wait()
+end
+
+local function toTarget(targetCFrame)
+    local char = GetCharacter()
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        char.HumanoidRootPart.CFrame = targetCFrame
+    end
+end
+
+local function Bypass(targetObject)
+    if targetObject and targetObject:IsA("BasePart") then
+        toTarget(targetObject.CFrame * CFrame.new(0, 50, 0))
+    end
+end
+
+local function QuestCheck()
+    return {
+        [1] = 1,
+        [2] = Workspace:FindFirstChild("MobSpawn") or Instance.new("Part"),
+        [4] = "QuestName",
+        [7] = { [1] = CFrame.new(0,0,0) }
+    }
+end
 
 local CustomHub = Instance.new("ScreenGui")
 CustomHub.Name = "Door_Hub"
@@ -850,10 +880,9 @@ function AddInput(tabName, text, placeholder, callback)
     end)
 end
 
-_G.SafeFarm = true
 spawn(function()
      while wait() do
-         if _G.SafeFarm then
+         if _G.Configs.SafeFarm then
               for i, v in pairs(game:GetService("Players").LocalPlayer.Character:GetDescendants()) do
                   if v:IsA("LocalScript") then
                       if v.Name == "General" or v.Name == "Shiftlock" or v.Name == "FallDamage" or v.Name == "4444" or v.Name == "CamBob" or v.Name == "JumpCD" or v.Name == "Looking" or v.Name == "Run"
@@ -888,11 +917,12 @@ AddLabel("Farm", "Farm Chính")
 SelectWeapon = nil
 
 AddDropdown("Farm", "Chọn Loại Vũ Khí", {"Melee", "Sword"}, function(Weapon)
-     _G.Configs.SelectWeaponFarm = Weapon
+    _G.Configs.SelectWeaponFarm = Weapon
 end)
 
 AddToggle("Farm", "Auto Farm Level", _G.Configs.AutoFarmLevel, function(val)
     _G.Configs.AutoFarmLevel = val
+    _G.Configs.StartFarm = val
 end)
 
 task.spawn(function()
@@ -902,7 +932,6 @@ task.spawn(function()
             local lp = game.Players.LocalPlayer
             local backpack = lp:FindFirstChild("Backpack")
             local character = lp.Character
-
             if backpack then
                 for _, v in pairs(backpack:GetChildren()) do
                     if v:IsA("Tool") and v.ToolTip == _G.Configs.SelectWeaponFarm then
@@ -911,7 +940,6 @@ task.spawn(function()
                     end
                 end
             end
-
             if character then
                 for _, v in pairs(character:GetChildren()) do
                     if v:IsA("Tool") and v.ToolTip == _G.Configs.SelectWeaponFarm then
@@ -935,7 +963,6 @@ function EquipTool(toolName)
     if not toolName or toolName == "" then return end
     local backpack = LocalPlayer:FindFirstChild("Backpack")
     local character = game.Players.LocalPlayer.Character
-
     if character and backpack and not character:FindFirstChild(toolName) then
         local tool = backpack:FindFirstChild(toolName)
         if tool then
@@ -1148,41 +1175,29 @@ local function Attack(target)
     RegisterHit:FireServer(unpack(dataTable))
 end
 
-local function TweenToPosition(cframe)
-    local character = GetCharacter()
-    local hrp = character and character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return end
-    
-    local distance = (hrp.Position - cframe.Position).Magnitude
-    local speed = 350
-    
-    local tweenInfo = TweenInfo.new(distance / speed, Enum.EasingStyle.Linear)
-    local tween = TweenService:Create(hrp, tweenInfo, {CFrame = cframe})
-    tween:Play()
-    return tween
-end
-
 task.spawn(function()
     while true do
         task.wait()
-        if _G.Configs.AutoFarmLevel and _G.Configs.BringMob then
+        if _G.Configs.StartFarm then
             pcall(function()
-                local target = GetNearestTarget()
-                if target and target:FindFirstChild("HumanoidRootPart") then
-                    local targetHRP = target.HumanoidRootPart
-                    local enemiesFolder = Workspace:FindFirstChild("Enemies")
-                    if enemiesFolder then
-                        for _, monster in pairs(enemiesFolder:GetChildren()) do
-                            if monster:IsA("Model") and monster:FindFirstChild("HumanoidRootPart") and monster:FindFirstChildOfClass("Humanoid") then
-                                if monster.Humanoid.Health > 0 and (monster.HumanoidRootPart.Position - targetHRP.Position).Magnitude <= 350 then
-                                    monster.HumanoidRootPart.CFrame = targetHRP.CFrame
-                                    monster.HumanoidRootPart.CanCollide = false
-                                    if monster.Humanoid:FindFirstChild("Animator") then
-                                        monster.Monster.Humanoid.Animator:Destroy()
-                                    end
-                                end
-                            end
-                        end
+                local targetMob = QuestCheck()[2]
+                local playerChar = game:GetService("Players").LocalPlayer.Character
+                if targetMob and playerChar and playerChar:FindFirstChild("HumanoidRootPart") then
+                    if (targetMob.Position - playerChar.HumanoidRootPart.Position).Magnitude >= 3000 then
+                        Bypass(targetMob)
+                    else
+                        repeat 
+                            task.wait() 
+                            toTarget(targetMob.CFrame) 
+                        until not _G.Configs.StartFarm or (targetMob.Position - playerChar.HumanoidRootPart.Position).Magnitude <= 20
+                    end
+                    
+                    if (targetMob.Position - playerChar.HumanoidRootPart.Position).Magnitude <= 1 then
+                        BringMobFarm = false
+                        task.wait(0.2)
+                        game:GetService('ReplicatedStorage').Remotes.CommF_:InvokeServer("StartQuest", QuestCheck()[4], QuestCheck()[1]) 
+                        task.wait(0.5)
+                        toTarget(QuestCheck()[7][1] * CFrame.new(0,30,20))
                     end
                 end
             end)
@@ -1193,49 +1208,9 @@ end)
 task.spawn(function()
     while true do
         task.wait()
-        if _G.Configs.AutoFarmLevel then
-            pcall(function()
-                local character = GetCharacter()
-                local target = GetNearestTarget()
-                
-                AutoHaki()
-                
-                if SelectWeapon then
-                    EquipTool(SelectWeapon)
-                end
-                
-                if target and target:FindFirstChild("HumanoidRootPart") then
-                    TweenToPosition(target.HumanoidRootPart.CFrame * CFrame.new(0, 10, 0))
-                else
-                    local enemiesFolder = Workspace:FindFirstChild("Enemies")
-                    if enemiesFolder and #enemiesFolder:GetChildren() == 0 then
-                        local originSpawns = Workspace:FindFirstChild("_WorldOrigin") and Workspace._WorldOrigin:FindFirstChild("EnemySpawns")
-                        if originSpawns then
-                            local firstSpawn = originSpawns:GetChildren()[1]
-                            if firstSpawn and firstSpawn:IsA("Part") then
-                                TweenToPosition(firstSpawn.CFrame * CFrame.new(0, 20, 0))
-                            end
-                        end
-                    end
-                end
-            end)
-        end
-    end
-end)
-
-task.spawn(function()
-    while true do
-        task.wait()
-        if _G.Configs.AutoFarmLevel then
-            TargetCharacter = GetNearestTarget()
-            if TargetCharacter then
-                Attack(TargetCharacter)
-            end
-        else
-            TargetCharacter = GetNearestTarget()
-            if TargetCharacter then
-                Attack(TargetCharacter)
-            end
+        TargetCharacter = GetNearestTarget()
+        if TargetCharacter then
+            Attack(TargetCharacter)
         end
     end
 end)
