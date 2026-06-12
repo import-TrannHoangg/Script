@@ -1175,29 +1175,147 @@ local function Attack(target)
     RegisterHit:FireServer(unpack(dataTable))
 end
 
+local SetCFrame = 1
+local PosMon = nil
+
 task.spawn(function()
-    while true do
-        task.wait()
+    while task.wait() do
+        pcall(function()
+            if _G.Configs.StartFarm and BringMobFarm and PosMon and _G.Configs.BringMob then
+                for _, v in pairs(Workspace.Enemies:GetChildren()) do
+                    if v:IsA("Model") and not string.find(v.Name, "Boss") then
+                        local vHRP = v:FindFirstChild("HumanoidRootPart")
+                        local vHum = v:FindFirstChildOfClass("Humanoid")
+                        if vHRP and vHum and vHum.Health > 0 then
+                            if (vHRP.Position - PosMon.Position).Magnitude <= 400 then
+                                vHRP.CFrame = PosMon
+                                vHum.WalkSpeed = 0
+                                vHum.JumpPower = 0
+                                vHRP.Size = Vector3.new(60, 60, 60)
+                                vHRP.Transparency = 1
+                                vHRP.CanCollide = false
+                                local head = v:FindFirstChild("Head")
+                                if head then head.CanCollide = false end
+                                local anim = vHum:FindFirstChild("Animator")
+                                if anim then anim:Destroy() end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    end
+end)
+
+task.spawn(function()
+    while task.wait() do
         if _G.Configs.StartFarm then
             pcall(function()
-                local targetMob = QuestCheck()[2]
-                local playerChar = game:GetService("Players").LocalPlayer.Character
-                if targetMob and playerChar and playerChar:FindFirstChild("HumanoidRootPart") then
-                    if (targetMob.Position - playerChar.HumanoidRootPart.Position).Magnitude >= 3000 then
-                        Bypass(targetMob)
+                local lp = game:GetService("Players").LocalPlayer
+                local playerChar = lp.Character
+                if not playerChar or not playerChar:FindFirstChild("HumanoidRootPart") then return end
+
+                local QuestUI = lp.PlayerGui:FindFirstChild("Main") and lp.PlayerGui.Main:FindFirstChild("Quest")
+                local questData = QuestCheck()
+                if not questData then return end
+
+                local npcPos   = questData[1]
+                local mobName  = questData[3]
+                local questName= questData[4]
+                local questLvl = questData[1]
+                local monName  = questData[6]
+                local mobCFrames = questData[7]
+
+                if not QuestUI or not QuestUI.Visible then
+                    task.wait(0.5)
+
+                    local npcCFrame = questData[2]
+                    if not npcCFrame then return end
+
+                    local dist = (npcCFrame.Position - playerChar.HumanoidRootPart.Position).Magnitude
+                    if dist >= 3000 then
+                        playerChar.HumanoidRootPart.CFrame = npcCFrame * CFrame.new(0, 5, 0)
+                        task.wait(0.3)
+                        playerChar.HumanoidRootPart.CFrame = npcCFrame
+                        task.wait(0.3)
                     else
-                        repeat 
-                            task.wait() 
-                            toTarget(targetMob.CFrame) 
-                        until not _G.Configs.StartFarm or (targetMob.Position - playerChar.HumanoidRootPart.Position).Magnitude <= 20
+                        repeat
+                            task.wait(0.1)
+                            toTarget(npcCFrame)
+                        until not _G.Configs.StartFarm
+                            or (npcCFrame.Position - playerChar.HumanoidRootPart.Position).Magnitude <= 25
                     end
-                    
-                    if (targetMob.Position - playerChar.HumanoidRootPart.Position).Magnitude <= 1 then
+
+                    task.wait(0.3)
+                    local distNow = (questData[2].Position - playerChar.HumanoidRootPart.Position).Magnitude
+                    if distNow <= 25 then
                         BringMobFarm = false
-                        task.wait(0.2)
-                        game:GetService('ReplicatedStorage').Remotes.CommF_:InvokeServer("StartQuest", QuestCheck()[4], QuestCheck()[1]) 
+                        CommF:InvokeServer("StartQuest", questData[4], questData[1])
                         task.wait(0.5)
-                        toTarget(QuestCheck()[7][1] * CFrame.new(0,30,20))
+                        if mobCFrames and mobCFrames[1] then
+                            toTarget(mobCFrames[1] * CFrame.new(0, 30, 20))
+                        end
+                    end
+
+                else
+                    local enemiesFolder = Workspace:FindFirstChild("Enemies")
+                    local foundMob = false
+
+                    if enemiesFolder and mobName then
+                        for _, v in pairs(enemiesFolder:GetChildren()) do
+                            if v.Name == mobName then
+                                local vHum = v:FindFirstChildOfClass("Humanoid")
+                                local vHRP = v:FindFirstChild("HumanoidRootPart")
+                                if vHum and vHRP and vHum.Health > 0 then
+                                    foundMob = true
+
+                                    local questTitle = QuestUI:FindFirstChild("Container")
+                                        and QuestUI.Container:FindFirstChild("QuestTitle")
+                                        and QuestUI.Container.QuestTitle:FindFirstChild("Title")
+                                    if questTitle and monName and not string.find(questTitle.Text, monName) then
+                                        CommF:InvokeServer("AbandonQuest")
+                                        return
+                                    end
+
+                                    PosMon = vHRP.CFrame
+                                    vHRP.Size = Vector3.new(60, 60, 60)
+                                    vHRP.CanCollide = false
+                                    vHRP.Transparency = 1
+                                    local head = v:FindFirstChild("Head")
+                                    if head then head.CanCollide = false end
+                                    vHum.WalkSpeed = 0
+                                    BringMobFarm = true
+
+                                    local backpack = lp:FindFirstChild("Backpack")
+                                    if backpack and _G.Configs.SelectWeaponFarm then
+                                        for _, tool in pairs(backpack:GetChildren()) do
+                                            if tool:IsA("Tool") and tool.ToolTip == _G.Configs.SelectWeaponFarm then
+                                                if playerChar and playerChar:FindFirstChildOfClass("Humanoid") then
+                                                    playerChar:FindFirstChildOfClass("Humanoid"):EquipTool(tool)
+                                                end
+                                                break
+                                            end
+                                        end
+                                    end
+
+                                    toTarget(vHRP.CFrame * CFrame.new(0, 30, 5))
+                                    break
+                                end
+                            end
+                        end
+                    end
+
+                    if not foundMob and mobCFrames and #mobCFrames > 0 then
+                        BringMobFarm = false
+                        if not SetCFrame or SetCFrame > #mobCFrames then
+                            SetCFrame = 1
+                        end
+                        toTarget(mobCFrames[SetCFrame] * CFrame.new(0, 30, 5))
+                        local spawnPos = mobCFrames[SetCFrame].Position
+                        if (spawnPos - playerChar.HumanoidRootPart.Position).Magnitude <= 50 then
+                            SetCFrame = SetCFrame >= #mobCFrames and 1 or SetCFrame + 1
+                            task.wait(0.5)
+                        end
                     end
                 end
             end)
