@@ -981,7 +981,7 @@ then
             CFrameQ = CFrame.new(896.51721191406, 6.4384617805481, 4390.1494140625)
             CFrameMon = CFrame.new(984.99896240234, 16.109552383423, 4417.91015625)
         elseif Lv == 75 or Lv <= 89 or _G.SelectMonster == "Desert Officer [Lv.
-70]" then
+70]" then -- Desert Officer
             Ms = "Desert Officer"
             NameQuest = "DesertQuest"
             QuestLv = 2
@@ -1010,7 +1010,7 @@ then
             CFrameMon = CFrame.new(1218.7956542969, 138.01184082031, -
 1488.0262451172)
         elseif Lv == 120 or Lv <= 149 or _G.SelectMonster == "Chief Petty Officer
-[Lv. 120]" then
+[Lv. 120]" then -- Chief Petty Officer
             Ms = "Chief Petty Officer"
             NameQuest = "MarineQuest2"
             QuestLv = 1
@@ -1029,7 +1029,7 @@ then
             CFrameMon = CFrame.new(-4955.6411132813, 365.46365356445, -
 2908.1865234375)
         elseif Lv == 175 or Lv <= 189 or _G.SelectMonster == "Dark Master [Lv.
-175]" then
+175]" then -- Dark Master
             Ms = "Dark Master"
             NameQuest = "SkyQuest"
             QuestLv = 2
@@ -1049,7 +1049,7 @@ then
             CFrameMon = CFrame.new(4937.31885, 0.332031399, 649.574524,
 0.694649816, 0, -0.719348073, 0, 1, 0, 0.719348073, 0, 0.694649816)
         elseif Lv == 210 or Lv <= 249 or _G.SelectMonster == "Dangerous Prisoner
-[Lv. 210]" then
+[Lv. 210]" then -- Dangerous Prisoner
             Ms = "Dangerous Prisoner"
             NameQuest = "PrisonerQuest"
             QuestLv = 2
@@ -1059,7 +1059,7 @@ then
             CFrameMon = CFrame.new(5099.6626, 0.351562679, 1055.7583, 0.898906827,
 0, -0.438139856, 0, 1, 0, 0.438139856, 0, 0.898906827)
         elseif Lv == 250 or Lv <= 274 or _G.SelectMonster == "Toga Warrior [Lv.
-250]" then 
+250]" then -- Toga Warrior
             Ms = "Toga Warrior"
             NameQuest = "ColosseumQuest"
             QuestLv = 1
@@ -1077,7 +1077,7 @@ then
             CFrameMon = CFrame.new(-1521.3740234375, 81.203170776367, -
 3066.3139648438)
         elseif Lv == 300 or Lv <= 324 or _G.SelectMonster == "Military Soldier [Lv.
-300]" then 
+300]" then -- Military Soldier
             Ms = "Military Soldier"
             NameQuest = "MagmaQuest"
             QuestLv = 1
@@ -1085,7 +1085,7 @@ then
             CFrameQ = CFrame.new(-5316.1157226563, 12.262831687927, 8517.00390625)
             CFrameMon = CFrame.new(-5369.0004882813, 61.24352645874, 8556.4921875)
         elseif Lv == 325 or Lv <= 374 or _G.SelectMonster == "Military Spy [Lv.
-325]" then 
+325]" then -- Military Spy
             Ms = "Military Spy"
             NameQuest = "MagmaQuest"
             QuestLv = 2
@@ -1094,7 +1094,7 @@ then
             CFrameMon = CFrame.new(-5787.00293, 75.8262634, 8651.69922,
 0.838590562, 0, -0.544762194, 0, 1, 0, 0.544762194, 0, 0.838590562)
         elseif Lv == 375 or Lv <= 399 or _G.SelectMonster == "Fishman Warrior [Lv.
-375]" then 
+375]" then -- Fishman Warrior
             Ms = "Fishman Warrior"
             NameQuest = "FishmanQuest"
             QuestLv = 1
@@ -1110,7 +1110,7 @@ game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntranc
 Vector3.new(61163.8515625, 11.6796875, 1819.7841796875))
             end
         elseif Lv == 400 or Lv <= 449 or _G.SelectMonster == "Fishman Commando [Lv.
-400]" then 
+400]" then -- Fishman Commando
             Ms = "Fishman Commando"
             NameQuest = "FishmanQuest"
             QuestLv = 2
@@ -1125,7 +1125,7 @@ game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntranc
 Vector3.new(61163.8515625, 11.6796875, 1819.7841796875))
             end
         elseif Lv == 450 or Lv <= 474 or _G.SelectMonster == "God's Guard [Lv.
-450]" then 
+450]" then -- God's Guard
             Ms = "God's Guard"
             NameQuest = "SkyExp1Quest"
             QuestLv = 1
@@ -1159,7 +1159,7 @@ game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntranc
 Vector3.new(-7894.6176757813, 5547.1416015625, -380.29119873047))
             end
         elseif Lv == 525 or Lv <= 549 or _G.SelectMonster == "Royal Squad [Lv.
-525]" then 
+525]" then -- Royal Squad
             Ms = "Royal Squad"
             NameQuest = "SkyExp2Quest"
             QuestLv = 1
@@ -1168,7 +1168,7 @@ Vector3.new(-7894.6176757813, 5547.1416015625, -380.29119873047))
             CFrameMon = CFrame.new(-7654.2514648438, 5637.1079101563, -
 1407.7550048828)
         elseif Lv == 550 or Lv <= 624 or _G.SelectMonster == "Royal Soldier [Lv.
-550]" then 
+550]" then -- Royal Soldier
             Ms = "Royal Soldier"
             NameQuest = "SkyExp2Quest"
             QuestLv = 2
@@ -1177,7 +1177,7 @@ Vector3.new(-7894.6176757813, 5547.1416015625, -380.29119873047))
             CFrameMon = CFrame.new(-7760.4106445313, 5679.9077148438, -
 1884.8112792969)
         elseif Lv == 625 or Lv <= 649 or _G.SelectMonster == "Galley Pirate [Lv.
-625]" then 
+625]" then -- Galley Pirate
             Ms = "Galley Pirate"
             NameQuest = "FountainQuest"
             QuestLv = 1
@@ -1216,7 +1216,7 @@ then
             CFrameMon = CFrame.new(-864.85009765625, 122.47104644775,
 1453.1505126953)
         elseif Lv == 775 or Lv <= 799 or _G.SelectMonster == "Swan Pirate [Lv.
-775]" then 
+775]" then -- Swan Pirate
             Ms = "Swan Pirate"
             NameQuest = "Area2Quest"
             QuestLv = 1
@@ -1225,7 +1225,7 @@ then
             CFrameMon = CFrame.new(1065.3669433594, 137.64012145996,
 1324.3798828125)
         elseif Lv == 800 or Lv <= 874 or _G.SelectMonster == "Factory Staff [Lv.
-800]" then 
+800]" then -- Factory Staff
             Ms = "Factory Staff"
             NameQuest = "Area2Quest"
             QuestLv = 2
@@ -1234,7 +1234,7 @@ then
             CFrameMon = CFrame.new(533.22045898438, 128.46876525879,
 355.62615966797)
         elseif Lv == 875 or Lv <= 899 or _G.SelectMonster == "Marine Lieutenant
-[Lv. 875]" then 
+[Lv. 875]" then -- Marine Lieutenant
             Ms = "Marine Lieutenant"
             NameQuest = "MarineQuest3"
             QuestLv = 1
@@ -1244,7 +1244,7 @@ then
             CFrameMon = CFrame.new(-2489.2622070313, 84.613594055176, -
 3151.8830566406)
         elseif Lv == 900 or Lv <= 949 or _G.SelectMonster == "Marine Captain [Lv.
-900]" then 
+900]" then -- Marine Captain
             Ms = "Marine Captain"
             NameQuest = "MarineQuest3"
             QuestLv = 2
@@ -1274,7 +1274,7 @@ then
             CFrameMon = CFrame.new(-5806.1098632813, 16.722528457642, -
 1164.4384765625)
         elseif Lv == 1000 or Lv <= 1049 or _G.SelectMonster == "Snow Trooper [Lv.
-1000]" then 
+1000]" then -- Snow Trooper
             Ms = "Snow Trooper"
             NameQuest = "SnowMountainQuest"
             QuestLv = 1
@@ -1283,7 +1283,7 @@ then
             CFrameMon = CFrame.new(535.21051025391, 432.74209594727, -
 5484.9165039063)
         elseif Lv == 1050 or Lv <= 1099 or _G.SelectMonster == "Winter Warrior [Lv.
-1050]" then 
+1050]" then -- Winter Warrior
             Ms = "Winter Warrior"
             NameQuest = "SnowMountainQuest"
             QuestLv = 2
@@ -1292,7 +1292,7 @@ then
             CFrameMon = CFrame.new(1234.4449462891, 456.95419311523, -
 5174.130859375)
         elseif Lv == 1100 or Lv <= 1124 or _G.SelectMonster == "Lab Subordinate
-[Lv. 1100]" then 
+[Lv. 1100]" then -- Lab Subordinate
             Ms = "Lab Subordinate"
             NameQuest = "IceSideQuest"
             QuestLv = 1
@@ -1302,7 +1302,7 @@ then
             CFrameMon = CFrame.new(-5720.5576171875, 63.309471130371, -
 4784.6103515625)
         elseif Lv == 1125 or Lv <= 1174 or _G.SelectMonster == "Horned Warrior [Lv.
-1125]" then
+1125]" then -- Horned Warrior
             Ms = "Horned Warrior"
             NameQuest = "IceSideQuest"
             QuestLv = 2
@@ -1312,7 +1312,7 @@ then
             CFrameMon = CFrame.new(-6292.751953125, 91.181983947754, -
 5502.6499023438)
         elseif Lv == 1175 or Lv <= 1199 or _G.SelectMonster == "Magma Ninja [Lv.
-1175]" then 
+1175]" then -- Magma Ninja
             Ms = "Magma Ninja"
             NameQuest = "FireSideQuest"
             QuestLv = 1
@@ -1322,7 +1322,7 @@ then
             CFrameMon = CFrame.new(-5461.8388671875, 130.36347961426, -
 5836.4702148438)
         elseif Lv == 1200 or Lv <= 1249 or _G.SelectMonster == "Lava Pirate [Lv.
-1200]" then 
+1200]" then -- Lava Pirate
             Ms = "Lava Pirate"
             NameQuest = "FireSideQuest"
             QuestLv = 2
@@ -1332,7 +1332,7 @@ then
             CFrameMon = CFrame.new(-5251.1889648438, 55.164535522461, -
 4774.4096679688)
         elseif Lv == 1250 or Lv <= 1274 or _G.SelectMonster == "Ship Deckhand [Lv.
-1250]" then 
+1250]" then -- Ship Deckhand
             Ms = "Ship Deckhand"
             NameQuest = "ShipQuest1"
             QuestLv = 1
@@ -1348,7 +1348,7 @@ game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntranc
 Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
             end
         elseif Lv == 1275 or Lv <= 1299 or _G.SelectMonster == "Ship Engineer [Lv.
-1275]" then
+1275]" then -- Ship Engineer
             Ms = "Ship Engineer"
             NameQuest = "ShipQuest1"
             QuestLv = 2
@@ -1364,7 +1364,7 @@ game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntranc
 Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
             end
         elseif Lv == 1300 or Lv <= 1324 or _G.SelectMonster == "Ship Steward [Lv.
-1300]" then 
+1300]" then -- Ship Steward
             Ms = "Ship Steward"
             NameQuest = "ShipQuest2"
             QuestLv = 1
@@ -1380,7 +1380,7 @@ game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntranc
 Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
             end
         elseif Lv == 1325 or Lv <= 1349 or _G.SelectMonster == "Ship Officer [Lv.
-1325]" then 
+1325]" then -- Ship Officer
             Ms = "Ship Officer"
             NameQuest = "ShipQuest2"
             QuestLv = 2
@@ -1396,7 +1396,7 @@ game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntranc
 Vector3.new(923.21252441406, 126.9760055542, 32852.83203125))
             end
         elseif Lv == 1350 or Lv <= 1374 or _G.SelectMonster == "Arctic Warrior [Lv.
-1350]" then 
+1350]" then -- Arctic Warrior
             Ms = "Arctic Warrior"
             NameQuest = "FrostQuest"
             QuestLv = 1
@@ -1414,7 +1414,7 @@ game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntranc
 Vector3.new(-6508.5581054688, 89.034996032715, -132.83953857422))
             end
         elseif Lv == 1375 or Lv <= 1424 or _G.SelectMonster == "Snow Lurker [Lv.
-1375]" then 
+1375]" then -- Snow Lurker
             Ms = "Snow Lurker"
             NameQuest = "FrostQuest"
             QuestLv = 2
@@ -1424,7 +1424,7 @@ Vector3.new(-6508.5581054688, 89.034996032715, -132.83953857422))
             CFrameMon = CFrame.new(5628.482421875, 57.574996948242, -
 6618.3481445313)
         elseif Lv == 1425 or Lv <= 1449 or _G.SelectMonster == "Sea Soldier [Lv.
-1425]" then 
+1425]" then -- Sea Soldier
             Ms = "Sea Soldier"
             NameQuest = "ForgottenQuest"
             QuestLv = 1
@@ -1447,7 +1447,7 @@ Water Fighter
     end
     if Third_Sea then
         if Lv == 1500 or Lv <= 1524 or _G.SelectMonster == "Pirate Millionaire [Lv.
-1500]" then 
+1500]" then -- Pirate Millionaire
             Ms = "Pirate Millionaire"
             NameQuest = "PiratePortQuest"
             QuestLv = 1
@@ -1457,7 +1457,7 @@ Water Fighter
             CFrameMon = CFrame.new(-435.68109130859, 189.69866943359,
 5551.0756835938)
         elseif Lv == 1525 or Lv <= 1574 or _G.SelectMonster == "Pistol Billionaire
-[Lv. 1525]" then
+[Lv. 1525]" then -- Pistol Billoonaire
             Ms = "Pistol Billionaire"
             NameQuest = "PiratePortQuest"
             QuestLv = 2
@@ -1467,7 +1467,7 @@ Water Fighter
             CFrameMon = CFrame.new(-236.53652954102, 217.46676635742,
 6006.0883789063)
         elseif Lv == 1575 or Lv <= 1599 or _G.SelectMonster == "Dragon Crew Warrior
-[Lv. 1575]" then
+[Lv. 1575]" then -- Dragon Crew Warrior
             Ms = "Dragon Crew Warrior"
             NameQuest = "AmazonQuest"
             QuestLv = 1
@@ -1476,7 +1476,7 @@ Water Fighter
             CFrameMon = CFrame.new(6301.9975585938, 104.77153015137, -
 1082.6075439453)
         elseif Lv == 1600 or Lv <= 1624 or _G.SelectMonster == "Dragon Crew Archer
-[Lv. 1600]" then
+[Lv. 1600]" then -- Dragon Crew Archer
             Ms = "Dragon Crew Archer"
             NameQuest = "AmazonQuest"
             QuestLv = 2
@@ -1484,7 +1484,7 @@ Water Fighter
             CFrameQ = CFrame.new(5833.1147460938, 51.60498046875, -1103.0693359375)
             CFrameMon = CFrame.new(6831.1171875, 441.76708984375, 446.58615112305)
         elseif Lv == 1625 or Lv <= 1649 or _G.SelectMonster == "Female Islander
-[Lv. 1625]" then
+[Lv. 1625]" then -- Female Islander
             Ms = "Female Islander"
             NameQuest = "AmazonQuest2"
             QuestLv = 1
@@ -1493,7 +1493,7 @@ Water Fighter
             CFrameMon = CFrame.new(5792.5166015625, 848.14392089844,
 1084.1818847656)
         elseif Lv == 1650 or Lv <= 1699 or _G.SelectMonster == "Giant Islander [Lv.
-1650]" then 
+1650]" then -- Giant Islander
             Ms = "Giant Islander"
             NameQuest = "AmazonQuest2"
             QuestLv = 2
@@ -1502,7 +1502,7 @@ Water Fighter
             CFrameMon = CFrame.new(5009.5068359375, 664.11071777344, -
 40.960144042969)
         elseif Lv == 1700 or Lv <= 1724 or _G.SelectMonster == "Marine Commodore
-[Lv. 1700]" then
+[Lv. 1700]" then -- Marine Commodore
             Ms = "Marine Commodore"
             NameQuest = "MarineTreeIsland"
             QuestLv = 1
@@ -1511,7 +1511,7 @@ Water Fighter
             CFrameMon = CFrame.new(2198.0063476563, 128.71075439453, -
 7109.5043945313)
         elseif Lv == 1725 or Lv <= 1774 or _G.SelectMonster == "Marine Rear Admiral
-[Lv. 1725]" then
+[Lv. 1725]" then -- Marine Rear Admiral
             Ms = "Marine Rear Admiral"
             NameQuest = "MarineTreeIsland"
             QuestLv = 2
@@ -1520,7 +1520,7 @@ Water Fighter
             CFrameMon = CFrame.new(3294.3142089844, 385.41125488281, -
 7048.6342773438)
         elseif Lv == 1775 or Lv <= 1799 or _G.SelectMonster == "Fishman Raider [Lv.
-1775]" then
+1775]" then -- Fishman Raide
             Ms = "Fishman Raider"
             NameQuest = "DeepForestIsland3"
             QuestLv = 1
@@ -1530,7 +1530,7 @@ Water Fighter
             CFrameMon = CFrame.new(-10553.268554688, 521.38439941406, -
 8176.9458007813)
         elseif Lv == 1800 or Lv <= 1824 or _G.SelectMonster == "Fishman Captain
-[Lv. 1800]" then
+[Lv. 1800]" then -- Fishman Captain
             Ms = "Fishman Captain"
             NameQuest = "DeepForestIsland3"
             QuestLv = 2
@@ -1540,7 +1540,7 @@ Water Fighter
             CFrameMon = CFrame.new(-10789.401367188, 427.18637084961, -
 9131.4423828125)
         elseif Lv == 1825 or Lv <= 1849 or _G.SelectMonster == "Forest Pirate [Lv.
-1825]" then
+1825]" then -- Forest Pirate
             Ms = "Forest Pirate"
             NameQuest = "DeepForestIsland"
             QuestLv = 1
@@ -1550,7 +1550,7 @@ Water Fighter
             CFrameMon = CFrame.new(-13489.397460938, 400.30349731445, -
 7770.251953125)
         elseif Lv == 1850 or Lv <= 1899 or _G.SelectMonster == "Mythological Pirate
-[Lv. 1850]" then
+[Lv. 1850]" then -- Mythological Pirate
             Ms = "Mythological Pirate"
             NameQuest = "DeepForestIsland"
             QuestLv = 2
@@ -1560,7 +1560,7 @@ Water Fighter
             CFrameMon = CFrame.new(-13508.616210938, 582.46228027344, -
 6985.3037109375)
         elseif Lv == 1900 or Lv <= 1924 or _G.SelectMonster == "Jungle Pirate [Lv.
-1900]" then
+1900]" then -- Jungle Pirate
             Ms = "Jungle Pirate"
             NameQuest = "DeepForestIsland2"
             QuestLv = 1
@@ -1570,7 +1570,7 @@ Water Fighter
             CFrameMon = CFrame.new(-12267.103515625, 459.75262451172, -
 10277.200195313)
         elseif Lv == 1925 or Lv <= 1974 or _G.SelectMonster == "Musketeer Pirate
-[Lv. 1925]" then
+[Lv. 1925]" then -- Musketeer Pirate
             Ms = "Musketeer Pirate"
             NameQuest = "DeepForestIsland2"
             QuestLv = 2
@@ -2565,10 +2565,20 @@ end
 TargetCharacter = nil
 
 local function Attack()
+    TargetCharacter = GetNearestTarget() 
+    
+    if not TargetCharacter then 
+        return 
+    end
+
     RegisterAttack:FireServer(0.5)
     task.wait()
+    
+    local targetPart = TargetCharacter:FindFirstChild("RightLowerLeg")
+    if not targetPart then return end
+
     local dataTable = {
-        TargetCharacter:WaitForChild("RightLowerLeg"),
+        targetPart,
         {},
         nil,
         GetSessionID()
@@ -2608,6 +2618,7 @@ end
 
 task.spawn(function()
     while true do
+        task.wait()
         TargetCharacter = GetNearestTarget()
         if TargetCharacter then
             Attack()
