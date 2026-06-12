@@ -1,3 +1,6 @@
+repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
+getgenv().team = "Pirates"
+
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
