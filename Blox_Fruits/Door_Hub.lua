@@ -2058,7 +2058,7 @@ end
 
 spawn(function()
     while task.wait() do
-        if _G.Config.AutoFarmLevel then
+        if _G.Configs.AutoFarmLevel then
           pcall(function()
               CheckLevel()
               if not string.find(game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Container.QuestTitle.Title.Text, NameMon) or game:GetService("Players").LocalPlayer.PlayerGui.Main.Quest.Visible == false then
@@ -2074,13 +2074,15 @@ spawn(function()
                               AutoHaki()
                               EquipWeapon(_G.Configs.SelectWeaponFarm)
                               Tween(v.HumanoidRootPart.CFrame * CFrame.new(posX,posY,posZ))
-                              v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
-                              v.HumanoidRootPart.Transparency = 1
-                              v.Humanoid.JumpPower = 0
-                              v.Humanoid.WalkSpeed = 0
-                              v.HumanoidRootPart.CanCollide = false
-                              FarmPos = v.HumanoidRootPart.CFrame
-                              MonFarm = v.Name
+                              repeat
+                                  v.HumanoidRootPart.Size = Vector3.new(60, 60, 60)
+                                  v.HumanoidRootPart.Transparency = 1
+                                  v.Humanoid.JumpPower = 0
+                                  v.Humanoid.WalkSpeed = 0
+                                  v.HumanoidRootPart.CanCollide = false
+                                  FarmPos = v.HumanoidRootPart.CFrame
+                                  MonFarm = v.Name
+                                  task.wait()
                               until not _G.Configs.AutoFarmLevel or not v.Parent or v.Humanoid.Health <= 0 or not game:GetService("Workspace").Enemies:FindFirstChild(v.Name) or game.Players.LocalPlayer.PlayerGui.Main.Quest.Visible == false
                           end
                       end
