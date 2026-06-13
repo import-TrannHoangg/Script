@@ -43,7 +43,7 @@ elseif placeId == 7449423635 then
 end
 
 function CheckLevel()
-    local Lv = game:GetService("Players").LocalPlayer.Data.Level.Value
+    local Lv = 2550
     if First_Sea then
         if Lv == 1 or Lv <= 9 or SelectMonster == "Bandit" or SelectArea == '' then -- Bandit
             Ms = "Bandit"
