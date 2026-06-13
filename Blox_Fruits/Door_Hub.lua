@@ -1,6 +1,3 @@
-repeat wait() until game:IsLoaded() and game.Players.LocalPlayer
-getgenv().team = "Pirates"
-
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 local CoreGui = game:GetService("CoreGui")
@@ -9,11 +6,11 @@ local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 print("1")
-local Net = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
+local Net = ReplicatedStorage.Modules.Net
 print("2")
-local RegisterAttack = Net:FindFirstChild("RE/RegisterAttack")
+local RegisterAttack = Net["RE/RegisterAttack"]
 print("3")
-local RegisterHit = Net:FindFirstChild("RE/RegisterHit")
+local RegisterHit = Net["RE/RegisterHit"]
 print("4")
 local CommF = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
 
