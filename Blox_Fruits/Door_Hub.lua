@@ -8,9 +8,13 @@ local CoreGui = game:GetService("CoreGui")
 local Workspace = game:GetService("Workspace")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local Net = ReplicatedStorage.Modules.Net
-local RegisterAttack = Net["RE/RegisterAttack"]
-local RegisterHit = Net["RE/RegisterHit"]
+print("1")
+local Net = ReplicatedStorage:WaitForChild("Modules"):WaitForChild("Net")
+print("2")
+local RegisterAttack = Net:FindFirstChild("RE/RegisterAttack")
+print("3")
+local RegisterHit = Net:FindFirstChild("RE/RegisterHit")
+print("4")
 local CommF = ReplicatedStorage:WaitForChild("Remotes"):WaitForChild("CommF_")
 
 local Players = game:GetService("Players")
@@ -42,8 +46,17 @@ elseif placeId == 7449423635 then
     Third_Sea = true
 end
 
+SelectMonster = SelectMonster or ""
+SelectArea = SelectArea or ""
+
 function CheckLevel()
-    local Lv = game:GetService("Players").LocalPlayer.Data.Level.Value
+    local Data = LocalPlayer:WaitForChild("Data",10)
+    local Level = Data and Data:FindFirstChild("Level")
+    
+    if not Level then
+        warn("Level nil")
+        return
+    end
     if First_Sea then
         if Lv == 1 or Lv <= 9 or SelectMonster == "Bandit" or SelectArea == '' then -- Bandit
             Ms = "Bandit"
@@ -2482,8 +2495,9 @@ end
 
 local function GetNearestTarget()
     local character = GetCharacter()
-    local hrp = character and character:FindFirstChild("HumanoidRootPart")
-    if not hrp then return nil end
+    if not character then return end
+    local hrp = character:FindFirstChild("HumanoidRootPart")
+    if not hrp then return end
 
     local nearest = nil
     local nearestDist = 60
@@ -2508,6 +2522,8 @@ end
 
 local function Attack(target)
     if not target or not RegisterAttack or not RegisterHit then return end
+    local sessionId = GetSessionID()
+    if not sessionId then return end
 
     RegisterAttack:FireServer(0.5)
     task.wait()
@@ -2515,11 +2531,12 @@ local function Attack(target)
     local targetPart = target:FindFirstChild("RightLowerLeg") or target:FindFirstChild("HumanoidRootPart")
     if not targetPart then return end
 
+    if not sessionId then return end
     local dataTable = {
         targetPart,
         {},
         nil,
-        GetSessionID()
+        sessionId
     }
     RegisterHit:FireServer(unpack(dataTable))
 end
