@@ -43,7 +43,7 @@ elseif placeId == 7449423635 then
 end
 
 function CheckLevel()
-    local Lv = 2550
+    local Lv = game:GetService("Players").LocalPlayer.Data.Level.Value
     if First_Sea then
         if Lv == 1 or Lv <= 9 or SelectMonster == "Bandit" or SelectArea == '' then -- Bandit
             Ms = "Bandit"
@@ -191,7 +191,7 @@ function CheckLevel()
             if _G.AutoLevel and (CFrameMon.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude > 3000 then
                 game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("requestEntrance",Vector3.new(61163.8515625, 11.6796875, 1819.7841796875))
             end
-        elseif Lv == 10 or Lv <= 474 or SelectMonster == "God's Guard" or SelectArea == 'Sky Island' then -- God's Guard
+        elseif Lv == 450 or Lv <= 474 or SelectMonster == "God's Guard" or SelectArea == 'Sky Island' then -- God's Guard
             Ms = "God's Guard"
             NameQuest = "SkyExp1Quest"
             QuestLv = 1
@@ -1924,6 +1924,226 @@ AddToggle("Farm", "Auto Farm Level", _G.Configs.AutoFarmLevel, function(value)
     _G.Configs.AutoFarmLevel = value
 end)
 
+SelectArea = ""
+SelectMonster = ""
+
+local monByArea = {}
+if First_Sea then
+    monByArea = {
+        ['Jungle'] = {"Monkey","Gorilla"},
+        ['Buggy'] = {"Pirate","Brute"},
+        ['Desert'] = {"Desert Bandit","Desert Officer"},
+        ['Snow'] = {"Snow Bandit","Snowman"},
+        ['Marine'] = {"Chief Petty Officer"},
+        ['Sky'] = {"Sky Bandit","Dark Master"},
+        ['Prison'] = {"Prisoner","Dangerous Prisoner"},
+        ['Colosseum'] = {"Toga Warrior","Gladiator"},
+        ['Magma'] = {"Military Soldier","Military Spy"},
+        ['Fishman'] = {"Fishman Warrior","Fishman Commando"},
+        ['Sky Island'] = {"God's Guard","Shanda","Royal Squad","Royal Soldier"},
+        ['Fountain'] = {"Galley Pirate","Galley Captain"},
+    }
+elseif Second_Sea then
+    monByArea = {
+        ['Area 1'] = {"Raider","Mercenary"},
+        ['Area 2'] = {"Swan Pirate","Factory Staff"},
+        ['Zombie'] = {"Zombie","Vampire"},
+        ['Marine'] = {"Marine Lieutenant","Marine Captain"},
+        ['Snow Mountain'] = {"Snow Trooper","Winter Warrior"},
+        ['Ice fire'] = {"Lab Subordinate","Horned Warrior"},
+        ['Ship'] = {"Ship Deckhand","Ship Engineer","Ship Steward","Ship Officer"},
+        ['Frost'] = {"Arctic Warrior","Snow Lurker"},
+        ['Forgotten'] = {"Sea Soldier","Water Fighter"},
+    }
+elseif Third_Sea then
+    monByArea = {
+        ['Pirate Port'] = {"Pirate Millionaire"},
+        ['Amazon'] = {"Female Islander","Giant Islander"},
+        ['Marine Tree'] = {"Marine Commodore","Marine Rear Admiral"},
+        ['Deep Forest'] = {"Forest Pirate","Mythological Pirate","Jungle Pirate","Musketeer Pirate"},
+        ['Haunted Castle'] = {"Reborn Skeleton","Living Zombie","Demonic Soul","Posessed Mummy"},
+        ['Nut Island'] = {"Peanut Scout","Peanut President"},
+        ['Ice Cream Island'] = {"Ice Cream Chef","Ice Cream Commander"},
+        ['Cake Island'] = {"Cookie Crafter","Cake Guard","Baking Staff","Head Baker"},
+        ['Choco Island'] = {"Cocoa Warrior","Chocolate Bar Battler","Sweet Thief","Candy Rebel"},
+        ['Candy Island'] = {"Candy Pirate","Snow Demon"},
+        ['Tiki Outpost'] = {"Isle Outlaw","Island Boy","Isle Champion"},
+    }
+end
+
+local monDropFrame = nil
+local monCurrentLabel = nil
+local monCurrentArrow = nil
+local monListContainer = nil
+local monListLayout = nil
+local monExpanded = false
+
+local function RebuildMonList(list)
+    if not monListContainer then return end
+    for _, child in pairs(monListContainer:GetChildren()) do
+        if not child:IsA("UIListLayout") then
+            child:Destroy()
+        end
+    end
+
+    SelectMonster = ""
+    if monCurrentLabel then
+        monCurrentLabel.Text = "Chưa Chọn"
+        monCurrentLabel.TextColor3 = Color3.fromRGB(140, 140, 150)
+    end
+    for _, item in pairs(list) do
+        local ItemBtn = Instance.new("TextButton")
+        ItemBtn.Size = UDim2.new(1, 0, 0, 28)
+        ItemBtn.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        ItemBtn.BackgroundTransparency = 0.97
+        ItemBtn.Text = "   " .. tostring(item)
+        ItemBtn.Font = Enum.Font.Gotham
+        ItemBtn.TextSize = 12
+        ItemBtn.TextColor3 = Color3.fromRGB(180, 180, 180)
+        ItemBtn.TextXAlignment = Enum.TextXAlignment.Left
+        ItemBtn.ClipsDescendants = true
+        ItemBtn.ZIndex = 8
+        ItemBtn.Parent = monListContainer
+        local ICorn = Instance.new("UICorner")
+        ICorn.CornerRadius = UDim.new(0, 6)
+        ICorn.Parent = ItemBtn
+        ItemBtn.MouseEnter:Connect(function()
+            TweenService:Create(ItemBtn, TweenInfo.new(0.15), {BackgroundTransparency = 0.9, TextColor3 = Color3.fromRGB(255,255,255)}):Play()
+        end)
+        ItemBtn.MouseLeave:Connect(function()
+            TweenService:Create(ItemBtn, TweenInfo.new(0.15), {BackgroundTransparency = 0.97, TextColor3 = Color3.fromRGB(180,180,180)}):Play()
+        end)
+        ItemBtn.MouseButton1Click:Connect(function()
+            if not MainFrame.Visible then return end
+            monExpanded = false
+            SelectMonster = tostring(item)
+            if monCurrentLabel then
+                monCurrentLabel.Text = SelectMonster
+                monCurrentLabel.TextColor3 = Color3.fromRGB(0, 255, 170)
+            end
+            if monCurrentArrow then monCurrentArrow.Text = "▼" end
+            if monDropFrame then
+                monDropFrame.ZIndex = 8
+                TweenService:Create(monDropFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, 42)}):Play()
+                task.wait(0.3)
+                monDropFrame.ClipsDescendants = true
+            end
+        end)
+    end
+end
+
+AddDropdown("Farm", "Chọn Khu Vực", AreaList or {}, function(area)
+    SelectArea = area
+    SelectMonster = ""
+    local list = monByArea[area]
+    if list then
+        RebuildMonList(list)
+    else
+        RebuildMonList(tableMon or {})
+    end
+end)
+
+do
+    local page = Pages["Farm"]
+
+    monDropFrame = Instance.new("Frame")
+    monDropFrame.Size = UDim2.new(1, -10, 0, 42)
+    monDropFrame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    monDropFrame.BackgroundTransparency = 0.96
+    monDropFrame.ClipsDescendants = true
+    monDropFrame.ZIndex = 4
+    monDropFrame.Parent = page
+
+    local DFCorner = Instance.new("UICorner")
+    DFCorner.CornerRadius = UDim.new(0, 8)
+    DFCorner.Parent = monDropFrame
+
+    local DropBtn = Instance.new("TextButton")
+    DropBtn.Size = UDim2.new(1, 0, 0, 42)
+    DropBtn.BackgroundTransparency = 1
+    DropBtn.Text = ""
+    DropBtn.ZIndex = 10
+    DropBtn.Parent = monDropFrame
+
+    local TitleLbl = Instance.new("TextLabel")
+    TitleLbl.Size = UDim2.new(0, 220, 0, 42)
+    TitleLbl.Position = UDim2.new(0, 15, 0, 0)
+    TitleLbl.Text = "Chọn Quái Farm"
+    TitleLbl.Font = Enum.Font.GothamMedium
+    TitleLbl.TextSize = 13
+    TitleLbl.TextColor3 = Color3.fromRGB(210, 210, 210)
+    TitleLbl.TextXAlignment = Enum.TextXAlignment.Left
+    TitleLbl.BackgroundTransparency = 1
+    TitleLbl.ZIndex = 5
+    TitleLbl.Parent = monDropFrame
+
+    monCurrentLabel = Instance.new("TextLabel")
+    monCurrentLabel.Size = UDim2.new(0, 160, 0, 42)
+    monCurrentLabel.Position = UDim2.new(1, -210, 0, 0)
+    monCurrentLabel.Text = "Chưa Chọn"
+    monCurrentLabel.Font = Enum.Font.GothamMedium
+    monCurrentLabel.TextSize = 12
+    monCurrentLabel.TextColor3 = Color3.fromRGB(140, 140, 150)
+    monCurrentLabel.TextXAlignment = Enum.TextXAlignment.Right
+    monCurrentLabel.BackgroundTransparency = 1
+    monCurrentLabel.ZIndex = 6
+    monCurrentLabel.Parent = monDropFrame
+
+    monCurrentArrow = Instance.new("TextLabel")
+    monCurrentArrow.Size = UDim2.new(0, 20, 0, 42)
+    monCurrentArrow.Position = UDim2.new(1, -35, 0, 0)
+    monCurrentArrow.Text = "▼"
+    monCurrentArrow.Font = Enum.Font.GothamBold
+    monCurrentArrow.TextSize = 15
+    monCurrentArrow.TextColor3 = Color3.fromRGB(150, 150, 150)
+    monCurrentArrow.BackgroundTransparency = 1
+    monCurrentArrow.ZIndex = 5
+    monCurrentArrow.Parent = monDropFrame
+
+    monListContainer = Instance.new("Frame")
+    monListContainer.Position = UDim2.new(0, 10, 0, 44)
+    monListContainer.BackgroundTransparency = 1
+    monListContainer.ZIndex = 5
+    monListContainer.Parent = monDropFrame
+
+    monListLayout = Instance.new("UIListLayout")
+    monListLayout.Padding = UDim.new(0, 4)
+    monListLayout.Parent = monListContainer
+
+    monListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
+        monListContainer.Size = UDim2.new(1, -20, 0, monListLayout.AbsoluteContentSize.Y)
+    end)
+
+    monDropFrame.MouseEnter:Connect(function()
+        if not MainFrame.Visible then return end
+        TweenService:Create(monDropFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.93}):Play()
+    end)
+    monDropFrame.MouseLeave:Connect(function()
+        if not MainFrame.Visible then return end
+        TweenService:Create(monDropFrame, TweenInfo.new(0.2), {BackgroundTransparency = 0.96}):Play()
+    end)
+
+    DropBtn.MouseButton1Click:Connect(function()
+        if not MainFrame.Visible then return end
+        monExpanded = not monExpanded
+        if monExpanded then
+            monDropFrame.ClipsDescendants = false
+            monDropFrame.ZIndex = 15
+            monCurrentArrow.Text = "▲"
+            local targetH = 48 + monListLayout.AbsoluteContentSize.Y
+            TweenService:Create(monDropFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, targetH)}):Play()
+        else
+            monCurrentArrow.Text = "▼"
+            monDropFrame.ZIndex = 8
+            TweenService:Create(monDropFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out), {Size = UDim2.new(1, -10, 0, 42)}):Play()
+            task.wait(0.3)
+            if not monExpanded then monDropFrame.ClipsDescendants = true end
+        end
+    end)
+
+    RebuildMonList(tableMon or {})
+end
+
 task.spawn(function()
     while true do
         task.wait()
@@ -2055,6 +2275,10 @@ function EquipWeapon(toolName)
         end
     end
 end
+
+local posX = 0
+local posY = 30
+local posZ = 0
 
 spawn(function()
     while task.wait() do
